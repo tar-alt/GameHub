@@ -28,8 +28,9 @@
     <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/5 p-10 w-full max-w-sm rounded-[40px] text-center">
             <h1 class="text-xl font-semibold mb-10 text-white">Login to continue</h1>
-            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
-            <button onclick="toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
+            <!-- ခလုတ်နှိပ်တာနဲ့ သီချင်းစဖွင့်အောင် လုပ်ထားပါတယ် -->
+            <button onclick="startAudio(); toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
+            <button onclick="startAudio(); toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
         </div>
     </div>
 
@@ -73,7 +74,6 @@
 
     <!-- Game Frame -->
     <div id="gameFrameContainer">
-        <!-- ဂိမ်းကထွက်ရင် သီချင်းပါ ပိတ်သွားအောင် ဒီမှာ ပြင်ထားပါတယ် -->
         <div onclick="closeGame()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full cursor-pointer"><i class="fa-solid fa-house"></i></div>
         <iframe id="gameFrame" src=""></iframe>
     </div>
@@ -86,18 +86,23 @@
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
 
+    // Auto Login Check
     window.onload = function() {
         if(localStorage.getItem("isLoggedIn") === "true") {
             window.location.href = gameLink;
         }
     };
 
+    // User interaction ရမှ အသံစဖွင့်လို့ရတဲ့အတွက် ဒီ Function ထည့်ရတာပါ
+    function startAudio() {
+        music.play().catch(() => {});
+    }
+
     function toggle(id) {
         document.querySelectorAll('#app > div').forEach(d => d.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
-    // ဂိမ်းကထွက်ပြီး အိမ်ပြန်ရောက်ရင် သီချင်းပိတ်တဲ့ Function
     function closeGame() {
         music.pause();
         music.currentTime = 0;
