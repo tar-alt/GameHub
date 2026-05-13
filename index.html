@@ -17,30 +17,41 @@
         #gameFrameContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: #000; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
         
-        /* အသံထွက်လာဖို့အတွက် ပထမဆုံး screen အောက်မှာခံထားမယ့် style */
-        .overlay-start { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); cursor: pointer; }
+        /* Loading Animation Style */
+        .loader { width: 48px; height: 48px; border: 5px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* အသံထွက်လာဖို့အတွက် အရှေ့ဆုံးကခံမယ့် Loading & Start Screen */
+        #entryScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
-<body onclick="startAudio()"> <!-- Screen ပေါ်နှိပ်လိုက်တာနဲ့ အသံစထွက်မယ် -->
+<body>
 
 <div id="topNotice"></div>
 <audio id="bgMusic" loop src="https://raw.githubusercontent.com/tar-alt/Photo-link-/be5dd1c4b85a9d0bc6951bf1379bff3ce0286c2a/lv_0_20260513134939.mp3"></audio>
 
-<!-- အသံထွက်ဖို့အတွက် တစ်ချက်နှိပ်ပေးရမယ့် screen -->
-<div id="startOverlay" class="overlay-start" onclick="this.style.display='none'">
-    <div class="text-white text-center">
-        <i class="fa-solid fa-volume-high text-5xl mb-4 animate-bounce"></i>
-        <p class="text-xl font-bold">နှိပ်ပြီး ဆက်သွားပါ</p>
+<!-- အသံထွက်ဖို့နဲ့ Loading ပြဖို့ အသစ်ပေါင်းထည့်ထားသော Screen -->
+<div id="entryScreen">
+    <div id="loadingBox" class="flex flex-col items-center">
+        <span class="loader mb-4"></span>
+        <p class="text-white text-sm tracking-widest animate-pulse">LOADING ASSETS...</p>
+    </div>
+    <div id="startBtnBox" class="hidden flex flex-col items-center">
+        <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 animate-bounce">
+            <i class="fa-solid fa-play text-white text-3xl ml-1"></i>
+        </div>
+        <button onclick="initApp()" class="px-10 py-3 bg-white text-black font-bold rounded-full text-lg active:scale-95 transition-all">START GAME</button>
+        <p class="text-gray-500 text-xs mt-4 uppercase tracking-tighter">Tap to enable high-quality audio</p>
     </div>
 </div>
 
-<div id="app">
+<div id="app" class="hidden"> <!-- အစမှာ ဖျောက်ထားမယ် -->
     <!-- Login Selection -->
     <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/5 p-10 w-full max-w-sm rounded-[40px] text-center">
             <h1 class="text-xl font-semibold mb-10 text-white">Login to continue</h1>
-            <button onclick="startAudio(); toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
-            <button onclick="startAudio(); toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
+            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
+            <button onclick="toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
         </div>
     </div>
 
@@ -96,18 +107,27 @@
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     const music = document.getElementById('bgMusic');
 
-    // Auto Login Check
+    // စဖွင့်ချင်း Loading ပြမယ် 2 second ကြာရင် Start ခလုတ်ပြမယ်
     window.onload = function() {
+        setTimeout(() => {
+            document.getElementById('loadingBox').classList.add('hidden');
+            document.getElementById('startBtnBox').classList.remove('hidden');
+        }, 2000);
+
         if(localStorage.getItem("isLoggedIn") === "true") {
-            window.location.href = gameLink;
+            // Login ဝင်ပြီးသားဖြစ်နေရင်တောင် အသံရဖို့အတွက် Entry Screen ကို အရင်နှိပ်ခိုင်းရပါမယ်
         }
     };
 
-    // User interaction ရမှ အသံစဖွင့်လို့ရတဲ့အတွက် ဒီ Function ထည့်ရတာပါ
-    function startAudio() {
-        music.play().catch((err) => {
-            console.log("Audio play failed:", err);
-        });
+    // Start Button နှိပ်မှ အသံစဖွင့်ပြီး App ကို ပြမယ်
+    function initApp() {
+        music.play().catch(e => console.log("Audio Error"));
+        document.getElementById('entryScreen').style.display = 'none';
+        document.getElementById('app').classList.remove('hidden');
+
+        if(localStorage.getItem("isLoggedIn") === "true") {
+            window.location.href = gameLink;
+        }
     }
 
     function toggle(id) {
@@ -188,4 +208,3 @@
 </script>
 </body>
 </html>
-
