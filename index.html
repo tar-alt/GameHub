@@ -96,7 +96,8 @@
     <!-- Game Frame -->
     <div id="gameFrameContainer">
         <div onclick="closeGame()" class="fixed top-5 left-5 z-[101] bg-black/60 text-white p-3 rounded-full cursor-pointer"><i class="fa-solid fa-house"></i></div>
-        <iframe id="gameFrame" src=""></iframe>
+        <!-- Iframe ထဲမှာ အသံဆက်ထွက်ဖို့ allow="autoplay" ထည့်ထားပါတယ် -->
+        <iframe id="gameFrame" src="" allow="autoplay"></iframe>
     </div>
 </div>
 
@@ -113,10 +114,6 @@
             document.getElementById('loadingBox').classList.add('hidden');
             document.getElementById('startBtnBox').classList.remove('hidden');
         }, 2000);
-
-        if(localStorage.getItem("isLoggedIn") === "true") {
-            // Login ဝင်ပြီးသားဖြစ်နေရင်တောင် အသံရဖို့အတွက် Entry Screen ကို အရင်နှိပ်ခိုင်းရပါမယ်
-        }
     };
 
     // Start Button နှိပ်မှ အသံစဖွင့်ပြီး App ကို ပြမယ်
@@ -126,8 +123,15 @@
         document.getElementById('app').classList.remove('hidden');
 
         if(localStorage.getItem("isLoggedIn") === "true") {
-            window.location.href = gameLink;
+            // Login ဝင်ပြီးသားဆိုရင် တိုက်ရိုက်ဂိမ်းဖွင့်ပေးမယ်
+            openGameDirectly();
         }
+    }
+
+    // ဂိမ်းကို Container ထဲမှာဖွင့်ပေးတဲ့ function
+    function openGameDirectly() {
+        document.getElementById('gameFrameContainer').style.display = 'block';
+        document.getElementById('gameFrame').src = gameLink;
     }
 
     function toggle(id) {
@@ -187,7 +191,7 @@
                     });
 
                     showNotice("Login အောင်မြင်ပါသည်။", "success");
-                    setTimeout(() => { window.location.href = gameLink; }, 1500);
+                    setTimeout(() => { openGameDirectly(); }, 1500);
 
                 } else if (last.data === `no_${userKey}`) {
                     clearInterval(check);
@@ -208,3 +212,4 @@
 </script>
 </body>
 </html>
+
