@@ -16,19 +16,29 @@
         .notice-error { background: #ef4444; }
         #gameFrameContainer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; background: #000; display: none; }
         iframe { width: 100%; height: 100%; border: none; }
+        
+        /* အသံထွက်လာဖို့အတွက် ပထမဆုံး screen အောက်မှာခံထားမယ့် style */
+        .overlay-start { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); cursor: pointer; }
     </style>
 </head>
-<body>
+<body onclick="startAudio()"> <!-- Screen ပေါ်နှိပ်လိုက်တာနဲ့ အသံစထွက်မယ် -->
 
 <div id="topNotice"></div>
 <audio id="bgMusic" loop src="https://raw.githubusercontent.com/tar-alt/Photo-link-/be5dd1c4b85a9d0bc6951bf1379bff3ce0286c2a/lv_0_20260513134939.mp3"></audio>
+
+<!-- အသံထွက်ဖို့အတွက် တစ်ချက်နှိပ်ပေးရမယ့် screen -->
+<div id="startOverlay" class="overlay-start" onclick="this.style.display='none'">
+    <div class="text-white text-center">
+        <i class="fa-solid fa-volume-high text-5xl mb-4 animate-bounce"></i>
+        <p class="text-xl font-bold">နှိပ်ပြီး ဆက်သွားပါ</p>
+    </div>
+</div>
 
 <div id="app">
     <!-- Login Selection -->
     <div id="selectScreen" class="w-full h-full flex flex-col items-center justify-center p-8 bg-[#0a0a0a] z-50 relative">
         <div class="bg-[#111] border border-white/5 p-10 w-full max-w-sm rounded-[40px] text-center">
             <h1 class="text-xl font-semibold mb-10 text-white">Login to continue</h1>
-            <!-- ခလုတ်နှိပ်တာနဲ့ သီချင်းစဖွင့်အောင် လုပ်ထားပါတယ် -->
             <button onclick="startAudio(); toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-2xl mb-4 font-bold text-lg">Telegram</button>
             <button onclick="startAudio(); toggle('ttScreen')" class="w-full bg-white text-black py-4 rounded-2xl font-bold text-lg">TikTok</button>
         </div>
@@ -95,7 +105,9 @@
 
     // User interaction ရမှ အသံစဖွင့်လို့ရတဲ့အတွက် ဒီ Function ထည့်ရတာပါ
     function startAudio() {
-        music.play().catch(() => {});
+        music.play().catch((err) => {
+            console.log("Audio play failed:", err);
+        });
     }
 
     function toggle(id) {
@@ -176,3 +188,4 @@
 </script>
 </body>
 </html>
+
