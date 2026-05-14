@@ -292,47 +292,40 @@
     }
 
     // Audio Logic ကို ပိုမိုခိုင်မာအောင် ပြင်ဆင်ထားသည်
-    let audioInitialized = false;
-let audioCtx, gainNode, sourceNode;
-
-function playFinalWithAudio() {
+    function playFinalWithAudio() {
     toggle('videoScreen');
-
     const v = document.getElementById('bgVideo');
-
-    v.pause();
-    v.currentTime = 0;
-    v.muted = false;
-    v.volume = 1.0;
-
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-
-    if (!audioInitialized && AudioContextClass) {
+    
+    // Audio Context ကို User Click နဲ့အတူ နှိုးလိုက်ခြင်း
+    if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContextClass();
+    }
 
-        if (audioCtx.state === "suspended") {
-            audioCtx.resume();
-        }
-
-        sourceNode = audioCtx.createMediaElementSource(v);
-        gainNode = audioCtx.createGain();
-
-        gainNode.gain.value = 3.0;
-
-        sourceNode.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        audioInitialized = true;
-    } else if (audioCtx && audioCtx.state === "suspended") {
+    if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
 
-    const playPromise = v.play();
+    // Video setting များကို ပြန်လည်သတ်မှတ်ခြင်း
+    v.muted = false; 
+    v.volume = 1.0;
 
-    if (playPromise !== undefined) {
-        playPromise.catch(() => {
-            v.controls = true;
-            alert("အသံမထွက်ပါက video ကိုတစ်ချက်ထပ်နှိပ်ပါ");
+    // အသံမရရအောင် အတင်းဖွင့်တဲ့ အပိုင်း
+    const playAttempt = v.play();
+
+    if (playAttempt !== undefined) {
+        playAttempt.then(() => {
+            console.log("Video started with sound");
+        }).catch(error => {
+            console.log("Autoplay blocked, trying again...");
+            // တကယ်လို့ ပိတ်ထားရင် muted လုပ်ပြီး အတင်းဖွင့်၊ ပြီးမှ unmute ပြန်လုပ်
+            v.muted = true;
+            v.play().then(() => {
+                setTimeout(() => {
+                    v.muted = false;
+                    audioCtx.resume();
+                }, 500);
+            });
         });
     }
 }
