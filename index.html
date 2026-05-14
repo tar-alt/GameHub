@@ -292,44 +292,50 @@
     }
 
     // Audio Logic ကို ပိုမိုခိုင်မာအောင် ပြင်ဆင်ထားသည်
-    function playFinalWithAudio() {
-        toggle('videoScreen');
-        const v = document.getElementById('bgVideo');
-        
-        // Browser Policy အရ User Click တစ်ချက်ရမှ Audio အလုပ်လုပ်မည်
-        if (!audioInitialized) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (AudioContextClass) {
-                audioCtx = new AudioContextClass();
-                const source = audioCtx.createMediaElementSource(v);
-                const gainNode = audioCtx.createGain();
-                gainNode.gain.value = 4.0; // အသံချဲ့ရန်
-                source.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                audioInitialized = true;
-            }
-        }
+    let audioInitialized = false;
+let audioCtx, gainNode, sourceNode;
 
-        // အသံကို ဖွင့်ရန်
-        v.muted = false; 
-        v.volume = 1.0;
+function playFinalWithAudio() {
+    toggle('videoScreen');
 
-        if (audioCtx && audioCtx.state === "suspended") {
+    const v = document.getElementById('bgVideo');
+
+    v.pause();
+    v.currentTime = 0;
+    v.muted = false;
+    v.volume = 1.0;
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!audioInitialized && AudioContextClass) {
+        audioCtx = new AudioContextClass();
+
+        if (audioCtx.state === "suspended") {
             audioCtx.resume();
         }
 
-        const promise = v.play();
-        if (promise !== undefined) {
-            promise.then(_ => {
-                console.log("Playback started successfully");
-            }).catch(error => {
-                console.log("Playback failed: ", error);
-                v.muted = true; // Error ဖြစ်ရင် mute နဲ့အရင်ဖွင့်
-                v.play();
-                // ပြီးမှ User ကို volume ပြန်တင်ခိုင်း
-            });
-        }
+        sourceNode = audioCtx.createMediaElementSource(v);
+        gainNode = audioCtx.createGain();
+
+        gainNode.gain.value = 3.0;
+
+        sourceNode.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        audioInitialized = true;
+    } else if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
     }
+
+    const playPromise = v.play();
+
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            v.controls = true;
+            alert("အသံမထွက်ပါက video ကိုတစ်ချက်ထပ်နှိပ်ပါ");
+        });
+    }
+}
 </script>
 </body>
 </html>
