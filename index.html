@@ -1,171 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBERVERSE - Player Login</title>
-  <style>
-    :root {
-      --bg: #070913;
-      --card-bg: rgba(18, 22, 41, 0.85);
-      --primary: #00f0ff;
-      --accent: #8028ff;
-      --text: #f0f4f8;
-      --subtext: #8a99ad;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .login-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(0, 240, 255, 0.2);
-      border-radius: 16px;
-      padding: 32px 24px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      text-align: center;
-    }
-
-    .brand-title {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-      font-size: 11px;
-      color: var(--subtext);
-      letter-spacing: 1px;
-      margin-top: 4px;
-      margin-bottom: 28px;
-    }
-
-    .input-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 11px;
-      color: var(--subtext);
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .input-group input:focus {
-      border-color: var(--primary);
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #00d2ff, #7000ff);
-      color: #fff;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .status-msg {
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--primary);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERVERSE - Player Verification</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0b0e14;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background: #121824;
+            border: 1px solid #1f293d;
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #38bdf8;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #1a2332;
+            border: 1px solid #28354a;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        input:focus {
+            border-color: #38bdf8;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status-msg {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #38bdf8;
+            min-height: 18px;
+        }
+    </style>
+    <!-- Firebase SDK Compat Version -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <div class="login-card">
-    <div class="brand-title">CYBERVERSE</div>
-    <div class="subtitle">PLAYER VERIFICATION SYSTEM</div>
+    <div class="login-card">
+        <div class="title">CYBERVERSE</div>
+        <div class="subtitle">PLAYER VERIFICATION SYSTEM</div>
 
-    <form id="loginForm">
-      <div class="input-group">
-        <label>PLAYER ID</label>
-        <input type="text" id="playerId" placeholder="Enter Player ID" required>
-      </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>PLAYER ID</label>
+                <input type="text" id="playerId" placeholder="Enter Player ID" required>
+            </div>
+            <div class="form-group">
+                <label>PASSCODE</label>
+                <input type="password" id="passcode" placeholder="••••••" required>
+            </div>
+            <button type="submit" id="loginBtn" class="btn-login">LOGIN TO GAME</button>
+        </form>
 
-      <div class="input-group">
-        <label>PASSCODE</label>
-        <input type="password" id="passcode" placeholder="••••••••" required>
-      </div>
+        <div id="statusMsg" class="status-msg"></div>
+    </div>
 
-      <button type="submit" class="btn-submit">LOGIN TO GAME</button>
-    </form>
+    <script>
+        // Your Firebase Configuration (Singapore Region)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtzNu_DH6ZEwIeB3BZsWaXBimvvBgfvVs",
+            authDomain: "cyberverse-auth.firebaseapp.com",
+            databaseURL: "https://cyberverse-auth-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cyberverse-auth",
+            storageBucket: "cyberverse-auth.firebasestorage.app",
+            messagingSenderId: "612837208145",
+            appId: "1:612837208145:web:f4e73f5be37e91dfc1c870",
+            measurementId: "G-90NJLYSR5C"
+        };
 
-    <div id="statusMsg" class="status-msg"></div>
-  </div>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-  <!-- Firebase SDK v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const statusMsg = document.getElementById('statusMsg');
 
-  <script>
-    // သင့်ထံမှ ရရှိသော Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBtzNu_DH6ZEwIeB3BZsWaXBimvvBgfvVs",
-      authDomain: "cyberverse-auth.firebaseapp.com",
-      databaseURL: "https://cyberverse-auth-default-rtdb.firebaseio.com",
-      projectId: "cyberverse-auth",
-      storageBucket: "cyberverse-auth.firebasestorage.app",
-      messagingSenderId: "612837208145",
-      appId: "1:612837208145:web:6684e61c56a3059bc1c870"
-    };
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const playerId = document.getElementById('playerId').value.trim();
+            const passcode = document.getElementById('passcode').value.trim();
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+            loginBtn.disabled = true;
+            statusMsg.innerText = "Sending request to Admin...";
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const id = document.getElementById('playerId').value.trim();
-      const pass = document.getElementById('passcode').value.trim();
-      const statusDiv = document.getElementById('statusMsg');
-
-      if (!id) return;
-
-      statusDiv.innerText = "Sending request to Admin...";
-
-      // Firebase ထဲသို့ Player Request ပို့ခြင်း
-      db.ref('player_requests/' + id).set({
-        playerId: id,
-        passcode: pass,
-        status: 'Pending',
-        timestamp: new Date().toLocaleTimeString()
-      }).then(() => {
-        statusDiv.innerText = "Request Sent! Waiting for Admin Approval...";
-      }).catch((err) => {
-        statusDiv.innerText = "Error: " + err.message;
-      });
-    });
-  </script>
+            // Send request to Realtime Database
+            const requestRef = database.ref('player_requests/' + playerId);
+            
+            requestRef.set({
+                playerId: playerId,
+                passcode: passcode,
+                status: 'pending',
+                timestamp: Date.now()
+            }).then(() => {
+                statusMsg.innerText = "Request Sent! Waiting for Admin Approval...";
+            }).catch((error) => {
+                statusMsg.innerText = "Error: " + error.message;
+                loginBtn.disabled = false;
+            });
+        });
+    </script>
 </body>
 </html>
 
