@@ -1,158 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CYBERVERSE ADMIN PANEL</title>
-  <style>
-    :root {
-      --bg: #060814;
-      --card-bg: rgba(18, 22, 41, 0.9);
-      --primary: #00f0ff;
-      --success: #00ffa3;
-      --danger: #ff3366;
-      --warning: #ffb703;
-      --text: #f0f4f8;
-      --subtext: #8a99ad;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 12px;
-    }
-
-    .title { font-size: 18px; font-weight: 800; color: var(--primary); }
-    .admin-tag { font-size: 11px; color: var(--subtext); }
-
-    .section-title {
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: var(--subtext);
-      margin-bottom: 12px;
-    }
-
-    .player-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(0, 240, 255, 0.15);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-
-    .card-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .id-tag { font-size: 18px; font-weight: bold; color: var(--primary); }
-
-    .badge {
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    .status-pending { background: rgba(255, 183, 3, 0.2); color: var(--warning); border: 1px solid var(--warning); }
-    .status-active { background: rgba(0, 255, 163, 0.2); color: var(--success); border: 1px solid var(--success); }
-    .status-banned { background: rgba(255, 51, 102, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-
-    .btn-group { display: flex; gap: 8px; margin-top: 12px; }
-    .btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 11px;
-      cursor: pointer;
-    }
-    .btn-approve { background: var(--success); color: #000; }
-    .btn-block { background: var(--danger); color: #fff; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERVERSE ADMIN</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0b0e14;
+            color: #ffffff;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1f293d;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .admin-info {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .section-title {
+            font-size: 11px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .request-card {
+            background: #121824;
+            border: 1px solid #1f293d;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .player-details {
+            font-size: 14px;
+        }
+        .player-id {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        .passcode {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .no-requests {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 20px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-approve {
+            background: #10b981;
+            color: #fff;
+        }
+        .btn-reject {
+            background: #ef4444;
+            color: #fff;
+        }
+    </style>
+    <!-- Firebase SDK Compat Version -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <div class="header">
-    <div class="title">CYBERVERSE ADMIN</div>
-    <div class="admin-tag">Logged as: SuperAdmin</div>
-  </div>
+    <div class="header">
+        <div class="title">CYBERVERSE ADMIN</div>
+        <div class="admin-info">Logged as: SuperAdmin</div>
+    </div>
 
-  <div class="section-title">LIVE PLAYER REQUESTS</div>
+    <div class="section-title">LIVE PLAYER REQUESTS</div>
 
-  <div id="playerContainer">
-    <p style="color: var(--subtext); font-size: 13px;">Waiting for player requests...</p>
-  </div>
+    <div id="requestsContainer" class="requests-list">
+        <div class="no-requests">Waiting for player requests...</div>
+    </div>
 
-  <!-- Firebase SDK v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // Your Firebase Configuration (Singapore Region)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtzNu_DH6ZEwIeB3BZsWaXBimvvBgfvVs",
+            authDomain: "cyberverse-auth.firebaseapp.com",
+            databaseURL: "https://cyberverse-auth-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cyberverse-auth",
+            storageBucket: "cyberverse-auth.firebasestorage.app",
+            messagingSenderId: "612837208145",
+            appId: "1:612837208145:web:f4e73f5be37e91dfc1c870",
+            measurementId: "G-90NJLYSR5C"
+        };
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBtzNu_DH6ZEwIeB3BZsWaXBimvvBgfvVs",
-      authDomain: "cyberverse-auth.firebaseapp.com",
-      databaseURL: "https://cyberverse-auth-default-rtdb.firebaseio.com",
-      projectId: "cyberverse-auth",
-      storageBucket: "cyberverse-auth.firebasestorage.app",
-      messagingSenderId: "612837208145",
-      appId: "1:1234567890:web:abcdef"
-    };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        const requestsContainer = document.getElementById('requestsContainer');
 
-    // Database မှ Player Requests များကို Live နားထောင်ခြင်း
-    db.ref('player_requests').on('value', (snapshot) => {
-      const container = document.getElementById('playerContainer');
-      container.innerHTML = "";
+        // Listen for Realtime Requests
+        database.ref('player_requests').on('value', (snapshot) => {
+            requestsContainer.innerHTML = '';
+            const data = snapshot.val();
 
-      const data = snapshot.val();
-      if (!data) {
-        container.innerHTML = '<p style="color: var(--subtext); font-size: 13px;">No requests found.</p>';
-        return;
-      }
+            if (!data) {
+                requestsContainer.innerHTML = '<div class="no-requests">Waiting for player requests...</div>';
+                return;
+            }
 
-      Object.keys(data).forEach((key) => {
-        const player = data[key];
-        const statusLower = (player.status || 'pending').toLowerCase();
+            Object.keys(data).forEach(key => {
+                const req = data[key];
+                
+                const card = document.createElement('div');
+                card.className = 'request-card';
+                card.innerHTML = `
+                    <div class="player-details">
+                        <div class="player-id">ID: ${req.playerId}</div>
+                        <div class="passcode">Passcode: ${req.passcode}</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-approve" onclick="approvePlayer('${req.playerId}')">Approve</button>
+                        <button class="btn btn-reject" onclick="deleteRequest('${req.playerId}')">Remove</button>
+                    </div>
+                `;
+                requestsContainer.appendChild(card);
+            });
+        });
 
-        const card = `
-          <div class="player-card">
-            <div class="card-row">
-              <span style="font-size: 11px; color: var(--subtext);">PLAYER ID</span>
-              <span class="id-tag">${player.playerId}</span>
-            </div>
-            <div class="card-row">
-              <span style="font-size: 11px; color: var(--subtext);">PASSCODE: ${player.passcode || '-'}</span>
-              <span class="badge status-${statusLower}">${player.status}</span>
-            </div>
-            <div class="btn-group">
-              <button class="btn btn-approve" onclick="updateStatus('${player.playerId}', 'Active')">APPROVE</button>
-              <button class="btn btn-block" onclick="updateStatus('${player.playerId}', 'Banned')">BLOCK</button>
-            </div>
-          </div>
-        `;
-        container.innerHTML += card;
-      });
-    });
+        function approvePlayer(playerId) {
+            alert('Approved Player: ' + playerId);
+        }
 
-    // Admin Action ကို Database ထဲ Update လုပ်ခြင်း
-    function updateStatus(playerId, newStatus) {
-      db.ref('player_requests/' + playerId).update({
-        status: newStatus
-      });
-    }
-  </script>
+        function deleteRequest(playerId) {
+            database.ref('player_requests/' + playerId).remove();
+        }
+    </script>
 </body>
 </html>
 
