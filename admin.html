@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberVerse Admin Control Panel</title>
+  <style>
+    :root {
+      --bg-color: #060814;
+      --card-bg: rgba(18, 22, 41, 0.8);
+      --primary: #00f0ff;
+      --success: #00ffa3;
+      --danger: #ff3366;
+      --warning: #ffb703;
+      --text: #f0f4f8;
+      --subtext: #8a99ad;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background: var(--bg-color); color: var(--text); padding: 30px; }
+
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; }
+    .title { font-size: 24px; font-weight: 800; color: var(--primary); }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+    .stat-num { font-size: 28px; font-weight: bold; margin-top: 8px; color: var(--primary); }
+
+    .table-container { background: var(--card-bg); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); padding: 20px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 12px; color: var(--subtext); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+
+    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .status-pending { background: rgba(255, 183, 3, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .status-active { background: rgba(0, 255, 163, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .status-banned { background: rgba(255, 51, 102, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+    .btn { padding: 6px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-right: 6px; }
+    .btn-approve { background: var(--success); color: #000; }
+    .btn-ban { background: var(--danger); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title">CYBERVERSE ADMIN PANEL</div>
+    <div style="font-size: 13px; color: var(--subtext);">Logged in as: <b style="color: #fff;">SuperAdmin</b></div>
+  </div>
+
+  <!-- STATS OVERVIEW -->
+  <div class="dashboard-grid">
+    <div class="stat-card">
+      <div style="font-size: 12px; color: var(--subtext);">PENDING REQUESTS</div>
+      <div class="stat-num" style="color: var(--warning);">3</div>
+    </div>
+    <div class="stat-card">
+      <div style="font-size: 12px; color: var(--subtext);">APPROVED PLAYERS</div>
+      <div class="stat-num" style="color: var(--success);">142</div>
+    </div>
+    <div class="stat-card">
+      <div style="font-size: 12px; color: var(--subtext);">BANNED PLAYERS</div>
+      <div class="stat-num" style="color: var(--danger);">5</div>
+    </div>
+  </div>
+
+  <!-- USER CONTROL TABLE -->
+  <div class="table-container">
+    <h3 style="margin-bottom: 16px; font-size: 16px;">Player Requests & Access Control</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Player ID</th>
+          <th>Verification Matching</th>
+          <th>Request Time</th>
+          <th>Current Status</th>
+          <th>Admin Action</th>
+        </tr>
+      </thead>
+      <tbody id="userTable">
+        <tr>
+          <td><b>8839201</b></td>
+          <td style="color: var(--success);">MATCHED (Entry 1 & 2)</td>
+          <td>10 mins ago</td>
+          <td><span class="status-badge status-pending">Pending</span></td>
+          <td>
+            <button class="btn btn-approve" onclick="updateStatus(this, 'Active')">APPROVE</button>
+            <button class="btn btn-ban" onclick="updateStatus(this, 'Banned')">BLOCK</button>
+          </td>
+        </tr>
+        <tr>
+          <td><b>9011422</b></td>
+          <td style="color: var(--success);">MATCHED (Entry 1 & 2)</td>
+          <td>1 hour ago</td>
+          <td><span class="status-badge status-active">Active</span></td>
+          <td>
+            <button class="btn btn-ban" onclick="updateStatus(this, 'Banned')">BLOCK</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function updateStatus(btn, newStatus) {
+      const row = btn.closest('tr');
+      const statusTd = row.children[3];
+
+      if (newStatus === 'Active') {
+        statusTd.innerHTML = '<span class="status-badge status-active">Active</span>';
+        alert("Player Access Approved!");
+      } else if (newStatus === 'Banned') {
+        statusTd.innerHTML = '<span class="status-badge status-banned">Banned</span>';
+        alert("Player Blocked!");
+      }
+    }
+  </script>
+</body>
+</html>
+
