@@ -9,8 +9,15 @@
     <h2>Login with Phone</h2>
     <form method="POST">
       <input type="text" name="phone" placeholder="Enter phone number" required>
-      <button type="submit">Login</button>
+      <button type="submit">Submit</button>
     </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
   </div>
 </body>
 </html>
